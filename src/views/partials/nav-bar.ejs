@@ -1,0 +1,139 @@
+<style>
+    /* Navbar customizada com gradiente do rodapé */
+    .custom-navbar {
+        background: linear-gradient(135deg, #6a11cb, #2575fc); /* Mesmo gradiente do rodapé */
+        color: #fff; /* Cor padrão do texto */
+    }
+
+    /* Ajuste do navbar-brand */
+    .custom-navbar .navbar-brand {
+        color: #fff; /* Texto branco */
+        font-weight: bold; /* Consistente com o rodapé */
+    }
+
+    .custom-navbar .navbar-brand:hover {
+        color: #f8f9fa; /* Leve destaque no hover */
+    }
+
+    /* Ajuste dos links da navbar */
+    .custom-navbar .nav-link {
+        color: #fff  !important; /* Links brancos */
+        background-color: transparent !important;
+        transition: all 0.3s ease; /* Mesmo tempo de transição do rodapé */
+    }
+
+    .custom-navbar .nav-link:hover,
+    .custom-navbar .nav-link:focus {
+        color: #d1d7e0 !important; /* Mesmo azul do hover do rodapé */
+        transform: translateX(5px); /* Mesmo efeito de deslocamento do rodapé */
+    }
+
+    /* Ajuste do ícone do toggler */
+    .custom-navbar .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); /* Ícone branco */
+    }
+
+    /* Ajuste do dropdown */
+    .custom-navbar .dropdown-menu {
+        background: #fff;
+        border: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-navbar .dropdown-item {
+        color: #333;
+    }
+
+    .custom-navbar .dropdown-item:hover {
+        background: #f8f9fa;
+        color: #0d6efd; /* Mesmo azul do hover do rodapé */
+    }
+
+    /* Ajuste do formulário de busca */
+    .custom-navbar .form-control {
+        border: 1px solid #fff;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+    }
+
+    .custom-navbar .btn-outline-light {
+        border-color: #fff;
+        color: #fff;
+        transition: all 0.3s ease; /* Transição suave como no rodapé */
+    }
+
+    .custom-navbar .btn-outline-light:hover {
+        background: #fff;
+        color: #2575fc; /* Cor do gradiente para contraste */
+    }
+
+    /* Ajuste do botão 'Sair' */
+    .custom-navbar .btn-link {
+        color: #fff;
+        text-decoration: none;
+        transition: all 0.3s ease; /* Transição suave */
+    }
+
+    .custom-navbar .btn-link:hover {
+        color: #0d6efd; /* Mesmo azul do hover do rodapé */
+        transform: translateX(5px); /* Mesmo efeito de deslocamento */
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light shadow-sm fixed-top custom-navbar">
+    <div class="container w-100 px-0 py-1">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <i class="fas fa-blog me-2"></i>
+            Blog Dev
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">
+                        <i class="fas fa-home me-1"></i>
+                        Home
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-tags me-1"></i>
+                        Categorias
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/categories/new">Criar Categoria</a></li>
+                        <li><a class="dropdown-item" href="/categories/table">Categorias Criadas</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-file-alt me-1"></i>
+                        Artigos
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/articles/new">Criar Artigos</a></li>
+                        <li><a class="dropdown-item" href="/articles/table">Artigos Criados</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <form class="d-flex mb-0" role="search" action="/articles/search" method="GET">
+                <input class="form-control me-2" type="search" name="q" placeholder="Pesquisar posts..." required>
+                <button class="btn btn-outline-light" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+
+            <!-- Altere o action para a rota correta -->
+            <form class="mb-0" action="/users/logout" method="POST">
+                <button type="submit" class="btn btn-link text-white">Sair</button>
+            </form>
+        </div>
+    </div>
+</nav>
