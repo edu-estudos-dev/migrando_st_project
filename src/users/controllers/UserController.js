@@ -63,58 +63,58 @@ class UserController {
 	}
 
 	// Autentica credenciais e inicia sessão do usuário
-   async login(req, res) {
-      const { userName, password } = req.body;
-    
-      if (!userName || !password) {
-        return res.render('users/formLogin', {
-          erro: 'Usuário ou senha incorretos.',
-          success: null
-        });
-      }
-    
-      try {
-        const userLowwerCase = userName.toLowerCase().trim();
-        const foundUser = await models.Users.findOne({
-          where: { userName: userLowwerCase }
-        });
-    
-        if (!foundUser) {
-          return res.render('users/formLogin', {
-            erro: 'Usuário não cadastrado.',
-            success: null
-          });
-        }
-    
-        const validPassword = await bcrypt.compare(password, foundUser.password);
-    
-        if (validPassword) {
-          // Adicione esta verificação para garantir que a sessão existe
-          if (!req.session) {
-            throw new Error('Sessão não inicializada');
-          }
-    
-          req.session.user = {
-            id: foundUser.id,
-            userName: foundUser.userName
-          };
-          
-         //  return res.redirect('/');
-         return res.send('Entrou no sistema')
-        } else {
-          return res.render('users/formLogin', {
-            erro: 'Senha incorreta',
-            success: null
-          });
-        }
-      } catch (error) {
-        console.error('Erro de autenticação:', error);
-        return res.render('users/formLogin', {
-          erro: 'Erro interno no servidor',
-          success: null
-        });
-      }
-    }
+	async login(req, res) {
+		const { userName, password } = req.body;
+
+		if (!userName || !password) {
+			return res.render('users/formLogin', {
+				erro: 'Usuário ou senha incorretos.',
+				success: null
+			});
+		}
+
+		try {
+			const userLowwerCase = userName.toLowerCase().trim();
+			const foundUser = await models.Users.findOne({
+				where: { userName: userLowwerCase }
+			});
+
+			if (!foundUser) {
+				return res.render('users/formLogin', {
+					erro: 'Usuário não cadastrado.',
+					success: null
+				});
+			}
+
+			const validPassword = await bcrypt.compare(password, foundUser.password);
+
+			if (validPassword) {
+				// Adicione esta verificação para garantir que a sessão existe
+				if (!req.session) {
+					throw new Error('Sessão não inicializada');
+				}
+
+				req.session.user = {
+					id: foundUser.id,
+					userName: foundUser.userName
+				};
+
+				//  return res.redirect('/');
+				return res.send('Entrou no sistema');
+			} else {
+				return res.render('users/formLogin', {
+					erro: 'Senha incorreta',
+					success: null
+				});
+			}
+		} catch (error) {
+			console.error('Erro de autenticação:', error);
+			return res.render('users/formLogin', {
+				erro: 'Erro interno no servidor',
+				success: null
+			});
+		}
+	}
 
 	// Metodo de logout
 	logout = (req, res) => {

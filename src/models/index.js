@@ -1,6 +1,7 @@
 // models/index.js (corrigido)
 import { Sequelize } from 'sequelize';
 import UserModel from '../users/models/UserModel.js';
+import EstabelecimentosModel from '../estabelecimentos/models/EstabelecimentosModel.js';
 
 const sequelize = new Sequelize('st_project_db', 'root', '', {
     host: 'localhost',
@@ -12,7 +13,8 @@ const sequelize = new Sequelize('st_project_db', 'root', '', {
 
 // Inicializar modelos
 const models = {
-    Users: UserModel(sequelize) 
+    Users: UserModel(sequelize),
+    Estabelecimentos: EstabelecimentosModel(sequelize) 
 };
 
 // Configurar associações

@@ -33,10 +33,11 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src', 'views'));
 
 // Rotas
+import estabelecimentosRouter from './src/estabelecimentos/routes/estabelecimentosRoutes.js'
 import usersRouter from './src/users/routes/userRoutes.js';
 
-// rotas para login / Logout
 app.use('/users', usersRouter);
+app.use('/estabelecimentos', estabelecimentosRouter);
 
 // Error Handling
 app.use((_req, res) => {
