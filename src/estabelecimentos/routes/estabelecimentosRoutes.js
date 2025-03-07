@@ -3,8 +3,12 @@ import EstabelecimentosController from '../controllers/EstabelecimentosControlle
 
 const estabelecimentosRouter = express.Router();
 
-estabelecimentosRouter.route('/add')
-    .get(EstabelecimentosController.addEstabelecimento)
-    .post(EstabelecimentosController.addEstabelecimento);
+estabelecimentosRouter
+	.route('/add')
+	.get(EstabelecimentosController.addEstabelecimento)
+	.post(EstabelecimentosController.addEstabelecimento);
+
+// rota para renderizar a tabeleca com os estabeleciments
+estabelecimentosRouter.get('/table', EstabelecimentosController.index);
 
 export default estabelecimentosRouter;

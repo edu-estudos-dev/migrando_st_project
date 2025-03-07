@@ -286,7 +286,7 @@ figure {
 }
 
 .col-acoes {
-	width: 12%;
+	width: 15%;
 }
 
 .col-estabelecimento {
@@ -298,7 +298,7 @@ figure {
 }
 
 .col-produto {
-	width: 5%;
+	width: 15%;
 }
 
 .col-chave {
@@ -310,15 +310,15 @@ figure {
 }
 
 .col-endereco {
-	width: 30%;
+	width: 20%;
 }
 
-.col-responsael {
-	width: 6%;
+.col-responsavel {
+	width: 8%;
 }
 
 .col-contato {
-	width: 12%;
+	width: 8%;
 }
 
 .text-white > a {

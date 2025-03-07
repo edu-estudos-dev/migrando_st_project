@@ -39,6 +39,11 @@ import usersRouter from './src/users/routes/userRoutes.js';
 app.use('/users', usersRouter);
 app.use('/estabelecimentos', estabelecimentosRouter);
 
+// Rota Painel de controle
+app.get('/painel', (req, res) => {
+   res.status(200).render('painel')
+})
+
 // Error Handling
 app.use((_req, res) => {
 	res.status(404).render('404');
