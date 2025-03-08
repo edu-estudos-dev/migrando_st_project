@@ -3,12 +3,25 @@ import EstabelecimentosController from '../controllers/EstabelecimentosControlle
 
 const estabelecimentosRouter = express.Router();
 
+// Rotas para adicionar um novo estabelecimento
 estabelecimentosRouter
-	.route('/add')
-	.get(EstabelecimentosController.addEstabelecimento)
-	.post(EstabelecimentosController.addEstabelecimento);
+    .route('/add')
+    .get(EstabelecimentosController.addEstabelecimento)
+    .post(EstabelecimentosController.addEstabelecimento);
 
-// rota para renderizar a tabeleca com os estabeleciments
+// Rota para listar todos os estabelecimentos
 estabelecimentosRouter.get('/table', EstabelecimentosController.index);
+
+// Rotas de edição
+estabelecimentosRouter
+    .route('/:id/edit')
+    .get(EstabelecimentosController.editEstabelecimentoForm)
+    .post(EstabelecimentosController.editEstabelecimento);
+
+// Rota para visualizar os detalhes de um estabelecimento
+estabelecimentosRouter.get('/:id/view', EstabelecimentosController.viewEstabelecimento);
+
+// Rota para excluir um estabelecimento
+estabelecimentosRouter.delete('/:id', EstabelecimentosController.excluirEstabelecimento);
 
 export default estabelecimentosRouter;

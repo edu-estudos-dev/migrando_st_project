@@ -15,7 +15,7 @@ const startServer = async () => {
 
 		// 2. Inicia o servidor HTTP
 		app.listen(PORT, () => {
-			console.log(`✅ Server running at: http://localhost:${PORT}`);
+			console.log(`✅ Server running at: http://localhost:${PORT}/painel`);
 			console.log(`⚙️  Environment: ${process.env.NODE_ENV || 'development'}`);
 		});
 	} catch (error) {

@@ -50,6 +50,10 @@
             margin-bottom: 0.5rem;
         }
 
+        .view-btn, .edit-btn, .delete-btn{
+            width: 88px;
+        }
+
         @media (max-width: 768px) {
             .table-custom thead {
                 display: none;
@@ -137,8 +141,8 @@
                             <td class="col-produto" data-label="Produto"><%= estabelecimento.produto %></td>
                             <td class="col-chave" data-label="Chave"><%= estabelecimento.chave %></td>
                             <td class="col-maquina" data-label="Máquina"><%= estabelecimento.maquina %></td>
-                            <td class="col-endereco text-start" data-label="Endereço"><%= estabelecimento.endereco %></td>
-                            <td class="col-responsavel text-start" data-label="Responsável"><%= estabelecimento.responsavel_nome %></td>
+                            <td class="col-endereco text-center" data-label="Endereço"><%= estabelecimento.endereco %></td>
+                            <td class="col-responsavel text-center" data-label="Responsável"><%= estabelecimento.responsavel_nome %></td>
                             <td class="col-contato" data-label="Contato" data-telefone="<%= estabelecimento.telefone_contato %>"><%= estabelecimento.telefone_contato %></td>
                             <td class="col-acoes">
                                 <div class="action-buttons">
@@ -159,6 +163,42 @@
             </table>
         </div>
     </main>
+
+    <!-- Modal de Sucesso para Exclusão -->
+    <div class="modal fade" id="successDeleteModal" tabindex="-1" aria-labelledby="successDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="successDeleteModalLabel">Sucesso!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Estabelecimento excluído com sucesso!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="okDeleteButton">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Erro para Exclusão -->
+    <div class="modal fade" id="errorDeleteModal" tabindex="-1" aria-labelledby="errorDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="errorDeleteModalLabel">Erro!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="errorDeleteMessage">
+                    Erro ao excluir o estabelecimento
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <% if (search) { %>
         <div class="d-flex justify-content-center pb-5">
@@ -192,6 +232,47 @@
             const editButtons = document.querySelectorAll('.edit-btn');
             const deleteButtons = document.querySelectorAll('.delete-btn');
 
+            // Configurar modais para exclusão
+            const successDeleteModal = new bootstrap.Modal(document.getElementById('successDeleteModal'));
+            const errorDeleteModal = new bootstrap.Modal(document.getElementById('errorDeleteModal'));
+            const errorDeleteMessage = document.getElementById('errorDeleteMessage');
+    
+            // Configurar botão OK do modal de sucesso
+            document.getElementById('okDeleteButton').addEventListener('click', function() {
+                successDeleteModal.hide();
+                window.location.reload();
+            });
+
+            // Função para lidar com a exclusão
+            function handleDelete(idEstabelecimento) {
+                if (confirm('Tem certeza que deseja EXCLUIR este Estabelecimento?')) {
+                    console.log('Confirmação aceita para ID:', idEstabelecimento); // Depuração
+                    fetch(`/estabelecimentos/${idEstabelecimento}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            successDeleteModal.show();
+                            setTimeout(() => {
+                                successDeleteModal.hide();
+                                window.location.reload();
+                            }, 3000);
+                        } else {
+                            errorDeleteMessage.textContent = 'Erro ao excluir o estabelecimento';
+                            errorDeleteModal.show();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                        errorDeleteMessage.textContent = `Erro ao processar a solicitação: ${error.message}`;
+                        errorDeleteModal.show();
+                    });
+                } else {
+                    console.log('Confirmação cancelada para ID:', idEstabelecimento); // Depuração
+                    return; // Sai da função se o usuário cancelar
+                }
+            }
+
             viewButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const idEstabelecimento = this.getAttribute('data-id');
@@ -207,29 +288,10 @@
             });
 
             deleteButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault(); 
                     const idEstabelecimento = this.getAttribute('data-id');
-                    if (confirm('Tem certeza que deseja EXCLUIR este Estabelecimento?')) {
-                        fetch(`/estabelecimentos/${idEstabelecimento}`, {
-                            method: 'DELETE'
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                const alertContainer = document.getElementById('alert-container');
-                                alertContainer.innerHTML = `
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                        Estabelecimento excluído com sucesso!
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                `;
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 2000);
-                            } else {
-                                alert('Erro ao excluir o estabelecimento');
-                            }
-                        });
-                    }
+                    handleDelete(idEstabelecimento);
                 });
             });
         });
