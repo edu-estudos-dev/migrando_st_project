@@ -34,15 +34,12 @@ app.set('views', path.join(__dirname, 'src', 'views'));
 
 // Rotas
 import estabelecimentosRouter from './src/estabelecimentos/routes/estabelecimentosRoutes.js'
+import painelRouter from './src/painel/painelRoutes.js';
 import usersRouter from './src/users/routes/userRoutes.js';
 
 app.use('/users', usersRouter);
 app.use('/estabelecimentos', estabelecimentosRouter);
-
-// Rota Painel de controle
-app.get('/painel', (req, res) => {
-   res.status(200).render('painel')
-})
+app.use('/', painelRouter);
 
 // Error Handling
 app.use((_req, res) => {

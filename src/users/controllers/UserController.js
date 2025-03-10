@@ -99,8 +99,7 @@ class UserController {
 					userName: foundUser.userName
 				};
 
-				//  return res.redirect('/');
-				return res.send('Entrou no sistema');
+				return res.status(200).redirect('/painel');
 			} else {
 				return res.render('users/formLogin', {
 					erro: 'Senha incorreta',
@@ -123,16 +122,13 @@ class UserController {
 				console.error('Erro ao destruir sessão:', err);
 				return res.status(500).render('500');
 			}
-
-			// Limpa o cookie COM AS MESMAS OPÇÕES DA SESSÃO
 			res.clearCookie('connect.sid', {
 				path: '/',
-				secure: process.env.NODE_ENV === 'production', // Mesmo valor da sessão
+				secure: process.env.NODE_ENV === 'production',
 				httpOnly: true,
 				sameSite: 'lax'
 			});
-
-			res.redirect('/users/login');
+			res.redirect('/users/login'); // Ou '/login' conforme suas rotas
 		});
 	};
 }

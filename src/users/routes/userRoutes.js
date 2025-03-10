@@ -16,6 +16,6 @@ userRouter.post('/register', UserControllers.createUser);
 userRouter.post('/', UserControllers.login);
 
 // Rota para autenticar credenciais de login
-userRouter.post('/logout', UserControllers.logout);
+userRouter.get('/logout', UserControllers.logout);
 
 export default userRouter;
