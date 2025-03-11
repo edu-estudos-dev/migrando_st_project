@@ -16,7 +16,7 @@
 	padding: 0;
 	box-sizing: border-box;
 	font-family: 'Urbanist', sans-serif;
-	font-size: 0.92rem;
+	font-size: 0.91rem;
 }
 
 main {
@@ -287,7 +287,7 @@ figure {
 }
 
 .col-acoes {
-	width: 17%;
+	width: 16%;
 }
 
 .col-estabelecimento {
@@ -299,15 +299,15 @@ figure {
 }
 
 .col-produto {
-	width: 15%;
+	width: 13%;
 }
 
 .col-chave {
-	width: 6%;
+	width: 4%;
 }
 
 .col-maquina {
-	width: 6%;
+	width: 5%;
 }
 
 .col-endereco {
@@ -319,7 +319,7 @@ figure {
 }
 
 .col-contato {
-	width: 8%;
+	width: 7%;
 }
 
 .text-white > a {

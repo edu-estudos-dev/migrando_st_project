@@ -1,6 +1,7 @@
 import express from 'express';
 import session from 'express-session';
 import methodOverride from 'method-override';
+import isAuthenticated from './src/middleware/auth.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 const app = express();
@@ -38,10 +39,10 @@ import painelRouter from './src/painel/painelRoutes.js';
 import usersRouter from './src/users/routes/userRoutes.js';
 
 app.use('/users', usersRouter);
-app.use('/estabelecimentos', estabelecimentosRouter);
-app.use('/', painelRouter);
+app.use('/estabelecimentos', isAuthenticated, estabelecimentosRouter);
+app.use('/', isAuthenticated, painelRouter);
 
-// Error Handling
+// Error Handlingm
 app.use((_req, res) => {
 	res.status(404).render('404');
 });
