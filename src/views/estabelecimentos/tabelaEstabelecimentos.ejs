@@ -67,54 +67,52 @@
             }
 
             /* Larguras fixas para alinhamento */
-            .table-custom th:nth-child(1),
-            .table-custom td:nth-child(1) {
+            .table-custom th:nth-child(0),
+            .table-custom td:nth-child(0) {
                 width: 20% !important;
             }
 
             /* Estabelecimento */
-            .table-custom th:nth-child(2),
-            .table-custom td:nth-child(2) {
+            .table-custom th:nth-child(1),
+            .table-custom td:nth-child(1) {
                 width: 13% !important;
             }
 
             /* Produto */
-            .table-custom th:nth-child(3),
-            .table-custom td:nth-child(3) {
+            .table-custom th:nth-child(2),
+            .table-custom td:nth-child(2) {
                 width: 4% !important;
             }
 
             /* Chave */
-            .table-custom th:nth-child(4),
-            .table-custom td:nth-child(4) {
-                width: 5% !important;
+            .table-custom th:nth-child(3),
+            .table-custom td:nth-child(3) {
+                width: 3% !important;
             }
 
             /* Máquina */
-            .table-custom th:nth-child(5),
-            .table-custom td:nth-child(5) {
-                width: 20% !important;
+            .table-custom th:nth-child(4),
+            .table-custom td:nth-child(4) {
+                width: 3% !important;
             }
 
             /* Endereço */
-            .table-custom th:nth-child(6),
-            .table-custom td:nth-child(6) {
-                width: 8% !important;
+            .table-custom th:nth-child(5),
+            .table-custom td:nth-child(5) {
+                width: 15% !important;
             }
 
             /* Responsável */
-            .table-custom th:nth-child(7),
-            .table-custom td:nth-child(7) {
-                width: 7% !important;
-            }
-
-            /* Contato */
-            .table-custom th:nth-child(8),
-            .table-custom td:nth-child(8) {
-                width: 17% !important;
+            .table-custom th:nth-child(6),
+            .table-custom td:nth-child(6) {
+                width: 5% !important;
             }
 
             /* Ações */
+            .table-custom th:nth-child(7),
+            .table-custom td:nth-child(7) {
+                width: 8% !important;
+            }
 
             .table-custom tbody tr:hover {
                 background-color: #f8f9fa !important;
@@ -200,7 +198,7 @@
                                                 <th scope="col">MÁQUINA</th>
                                                 <th scope="col">ENDEREÇO</th>
                                                 <th scope="col">RESPONSÁVEL</th>
-                                                <th scope="col">CONTATO</th>
+                                                <!-- <th scope="col">CONTATO</th> -->
                                                 <th scope="col">AÇÕES</th>
                                             </tr>
                                         </thead>
@@ -225,10 +223,10 @@
                                                     <td class="col-responsavel text-center" data-label="Responsável">
                                                         <%= estabelecimento.responsavel_nome %>
                                                     </td>
-                                                    <td class="col-contato" data-label="Contato"
+                                                    <!-- <td class="col-contato" data-label="Contato"
                                                         data-telefone="<%= estabelecimento.telefone_contato %>">
                                                         <%= estabelecimento.telefone_contato %>
-                                                    </td>
+                                                    </td> -->
                                                     <td class="col-acoes">
                                                         <div class="action-buttons">
                                                             <a type="button"
