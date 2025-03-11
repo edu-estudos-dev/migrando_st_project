@@ -32,9 +32,8 @@ main {
 	background-color: var(--dark-color-3) !important;
 }
 
-
 .header-spacer {
-	height: 100px !important;
+	height: 100px;
 }
 
 /* Ajuste adicional para o container */
