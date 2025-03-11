@@ -4,86 +4,114 @@
 
 <head>
     <style>
+
+ 
         .w-95 {
             width: 95%;
             margin: auto;
         }
-
+    
+        /* Espaçador para o header fixo com espaçamento adicional */
+        .header-spacer {
+            height: 110px !important; 
+        }
+    
+        /* Barra de cabeçalho acima da tabela */
+        .header-bar {
+            padding: 0.5rem !important;
+            border-radius: 5px !important;
+            margin-bottom: 0.5rem !important;
+            position: relative !important;
+            z-index: 5 !important;
+        }
+    
+        /* Contêiner da tabela com scroll */
+        .table-container {
+            max-height: calc(80vh - 40px) !important; 
+            overflow-y: auto !important; 
+            overflow-x: hidden !important; 
+            position: relative !important;
+            display: block !important; 
+        }
+    
+        /* Tabela */
         .table-custom {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 8px !important;
+            width: 100% !important; 
+            border-collapse: collapse !important;
+            table-layout: fixed !important;
         }
-
+    
+        /* Cabeçalho fixo */
         .table-custom thead {
-            background-color: #007bff;
-            color: white;
+            position: sticky !important;
+            top: -1px !important; 
+            z-index: 10 !important;
+            background-color: #007bff !important;
+            color: white !important;
         }
-
+    
         .table-custom thead th {
-            padding: 0.5rem !important; /* Aumentado o padding-block para 1rem */
+            padding: 0.8rem !important;
+            background-color: var(--dark-color-1) !important;
+            color: white !important;
         }
-
+    
         .table-custom th,
         .table-custom td {
-            padding: 5px 0.5rem !important; /* Mantido para outras células */
-            vertical-align: middle;
+            padding: 5px 0.5rem !important;
+            vertical-align: middle !important;
+            text-align: center !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
         }
-
+    
+        /* Larguras fixas para alinhamento */
+        .table-custom th:nth-child(1),
+        .table-custom td:nth-child(1) { width: 20% !important; } /* Estabelecimento */
+        .table-custom th:nth-child(2),
+        .table-custom td:nth-child(2) { width: 13% !important; } /* Produto */
+        .table-custom th:nth-child(3),
+        .table-custom td:nth-child(3) { width: 4% !important; }  /* Chave */
+        .table-custom th:nth-child(4),
+        .table-custom td:nth-child(4) { width: 5% !important; }  /* Máquina */
+        .table-custom th:nth-child(5),
+        .table-custom td:nth-child(5) { width: 20% !important; } /* Endereço */
+        .table-custom th:nth-child(6),
+        .table-custom td:nth-child(6) { width: 8% !important; }  /* Responsável */
+        .table-custom th:nth-child(7),
+        .table-custom td:nth-child(7) { width: 7% !important; }  /* Contato */
+        .table-custom th:nth-child(8),
+        .table-custom td:nth-child(8) { width: 17% !important; } /* Ações */
+    
         .table-custom tbody tr:hover {
-            background-color: #f8f9fa;
-            transition: background-color 0.3s;
+            background-color: #f8f9fa !important;
+            transition: background-color 0.3s !important;
         }
-
+    
         .action-buttons .btn {
-            margin-right: 1px;
-            margin-bottom: 1px;
+            margin-right: 1px !important;
+            margin-bottom: 1px !important;
         }
-
+    
         .action-buttons .btn:last-child {
-            margin-right: 0;
+            margin-right: 0 !important;
         }
-
-        .header-bar {
-            padding: 0.5rem;
-            border-radius: 5px;
-            margin-bottom: 0.5rem;
+    
+        .view-btn,
+        .edit-btn,
+        .delete-btn {
+            max-width: 30% !important;
+            min-width: 30% !important;
+            padding-inline: 0;
+            margin: 0;
         }
-
-        .view-btn, .edit-btn, .delete-btn{
-            max-width: 30%;
-            min-width: 30%;
-        }
-
-        @media (max-width: 768px) {
-            .table-custom thead {
-                display: none;
-            }
-
-            .table-custom tr {
-                display: block;
-                margin-bottom: 6px;
-                border: 1px solid #dee2e6;
-                border-radius: 5px;
-            }
-
-            .table-custom td {
-                display: flex;
-                justify-content: space-between;
-                padding: 2px !important;
-                border-bottom: 1px solid #dee2e6;
-            }
-
-            .table-custom td:last-child {
-                border-bottom: none;
-            }
-
-            .table-custom td::before {
-                content: attr(data-label);
-                font-weight: bold;
-                margin-right: 3px;
-                color: #007bff;
-            }
+        
+        /* Evitar scroll na página inteira */
+        html, body {
+            overflow-y: hidden !important; /* Impede scroll na página inteira */
         }
     </style>
 </head>
@@ -91,37 +119,36 @@
 <body class="bg-light w-95">
     <%- include('../partials/header') %>
 
-    <!-- Espaçador para compensar o header -->
+    <!-- Espaçador para compensar o header com espaçamento adicional -->
     <div class="header-spacer"></div>
 
     <!-- Mensagens de Sucesso/Falha -->
     <div id="alert-container"></div>
+
     <% if (typeof success !== 'undefined') { %>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <%= success %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <% } %>
-    <% if (typeof error !== 'undefined') { %>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <%= error %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert"> <%= success %>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <% } %>
 
-    <main class="mb-5">
+    <% if (typeof error !== 'undefined') { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert"> <%= error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <main class="main-estabelecimentos">
         <div class="row header-bar mb-0">
             <div class="col-6">
-                <h1 class="text-primary mb-0 fw-bold">Estabelecimentos Cadastrados</h1>
+                <h1 class="text-dark mb-0 fw-bold">Estabelecimentos Cadastrados</h1>
             </div>
             <div class="col-6 d-flex justify-content-end align-items-center">
-                <a type="button" class="btn btn-primary mb-0" href="/estabelecimentos/add">
+                <a type="button" class="btn btn-secondary mb-0" href="/estabelecimentos/add">
                     <i class="bi bi-person-add"></i> Novo Estabelecimento
                 </a>
             </div>
         </div>
-
-        <div class="table-responsive">
+        <div class="table-container">
             <table class="table table-bordered table-custom mb-0">
                 <thead class="text-center fs-6">
                     <tr>
@@ -136,24 +163,42 @@
                     </tr>
                 </thead>
                 <tbody class="text-center align-middle">
-                    <% estabelecimentos.forEach((estabelecimento) => { %>
+                    <% estabelecimentos.forEach((estabelecimento)=> { %>
                         <tr>
-                            <td class="col-estabelecimento" data-label="Estabelecimento"><%= estabelecimento.estabelecimento %></td>
-                            <td class="col-produto" data-label="Produto"><%= estabelecimento.produto %></td>
-                            <td class="col-chave" data-label="Chave"><%= estabelecimento.chave %></td>
-                            <td class="col-maquina" data-label="Máquina"><%= estabelecimento.maquina %></td>
-                            <td class="col-endereco text-center" data-label="Endereço"><%= estabelecimento.endereco %></td>
-                            <td class="col-responsavel text-center" data-label="Responsável"><%= estabelecimento.responsavel_nome %></td>
-                            <td class="col-contato" data-label="Contato" data-telefone="<%= estabelecimento.telefone_contato %>"><%= estabelecimento.telefone_contato %></td>
+                            <td class="col-estabelecimento" data-label="Estabelecimento">
+                                <%= estabelecimento.estabelecimento %>
+                            </td>
+                            <td class="col-produto" data-label="Produto">
+                                <%= estabelecimento.produto %>
+                            </td>
+                            <td class="col-chave" data-label="Chave">
+                                <%= estabelecimento.chave %>
+                            </td>
+                            <td class="col-maquina" data-label="Máquina">
+                                <%= estabelecimento.maquina %>
+                            </td>
+                            <td class="col-endereco text-center" data-label="Endereço">
+                                <%= estabelecimento.endereco %>
+                            </td>
+                            <td class="col-responsavel text-center" data-label="Responsável">
+                                <%= estabelecimento.responsavel_nome %>
+                            </td>
+                            <td class="col-contato" data-label="Contato"
+                                data-telefone="<%= estabelecimento.telefone_contato %>">
+                                <%= estabelecimento.telefone_contato %>
+                            </td>
                             <td class="col-acoes">
                                 <div class="action-buttons">
-                                    <a type="button" class="btn btn-secondary btn-sm view-btn" data-id="<%= estabelecimento.id %>">
+                                    <a type="button" class="btn btn-light border btn-sm view-btn"
+                                        data-id="<%= estabelecimento.id %>">
                                         <i class="bi bi-eye"></i> Detalhes
                                     </a>
-                                    <a type="button" class="btn btn-warning btn-sm edit-btn" data-id="<%= estabelecimento.id %>">
+                                    <a type="button" class="btn btn-warning btn-sm edit-btn"
+                                        data-id="<%= estabelecimento.id %>">
                                         <i class="bi bi-pencil"></i> Editar
                                     </a>
-                                    <a type="button" class="btn btn-danger btn-sm delete-btn" data-id="<%= estabelecimento.id %>">
+                                    <a type="button" class="btn btn-danger btn-sm delete-btn"
+                                        data-id="<%= estabelecimento.id %>">
                                         <i class="bi bi-person-x"></i> Excluir
                                     </a>
                                 </div>
@@ -166,7 +211,8 @@
     </main>
 
     <!-- Modal de Sucesso para Exclusão -->
-    <div class="modal fade" id="successDeleteModal" tabindex="-1" aria-labelledby="successDeleteModalLabel" aria-hidden="true">
+    <div class="modal fade" id="successDeleteModal" tabindex="-1"
+        aria-labelledby="successDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
@@ -184,7 +230,8 @@
     </div>
 
     <!-- Modal de Erro para Exclusão -->
-    <div class="modal fade" id="errorDeleteModal" tabindex="-1" aria-labelledby="errorDeleteModalLabel" aria-hidden="true">
+    <div class="modal fade" id="errorDeleteModal" tabindex="-1"
+        aria-labelledby="errorDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
@@ -207,12 +254,13 @@
         </div>
     <% } %>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous">
+    </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Função para formatar telefone
             function formatPhoneNumber(phone) {
                 const cleaned = ('' + phone).replace(/\D/g, ''); // Remove tudo que não é dígito
@@ -237,9 +285,9 @@
             const successDeleteModal = new bootstrap.Modal(document.getElementById('successDeleteModal'));
             const errorDeleteModal = new bootstrap.Modal(document.getElementById('errorDeleteModal'));
             const errorDeleteMessage = document.getElementById('errorDeleteMessage');
-    
+
             // Configurar botão OK do modal de sucesso
-            document.getElementById('okDeleteButton').addEventListener('click', function() {
+            document.getElementById('okDeleteButton').addEventListener('click', function () {
                 successDeleteModal.hide();
                 window.location.reload();
             });
@@ -251,23 +299,23 @@
                     fetch(`/estabelecimentos/${idEstabelecimento}`, {
                         method: 'DELETE'
                     })
-                    .then(response => {
-                        if (response.ok) {
-                            successDeleteModal.show();
-                            setTimeout(() => {
-                                successDeleteModal.hide();
-                                window.location.reload();
-                            }, 3000);
-                        } else {
-                            errorDeleteMessage.textContent = 'Erro ao excluir o estabelecimento';
+                        .then(response => {
+                            if (response.ok) {
+                                successDeleteModal.show();
+                                setTimeout(() => {
+                                    successDeleteModal.hide();
+                                    window.location.reload();
+                                }, 3000);
+                            } else {
+                                errorDeleteMessage.textContent = 'Erro ao excluir o estabelecimento';
+                                errorDeleteModal.show();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro:', error);
+                            errorDeleteMessage.textContent = `Erro ao processar a solicitação: ${error.message}`;
                             errorDeleteModal.show();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro:', error);
-                        errorDeleteMessage.textContent = `Erro ao processar a solicitação: ${error.message}`;
-                        errorDeleteModal.show();
-                    });
+                        });
                 } else {
                     console.log('Confirmação cancelada para ID:', idEstabelecimento); // Depuração
                     return; // Sai da função se o usuário cancelar
@@ -275,29 +323,28 @@
             }
 
             viewButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     const idEstabelecimento = this.getAttribute('data-id');
                     window.location.href = `/estabelecimentos/${idEstabelecimento}/view`;
                 });
             });
 
             editButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     const idEstabelecimento = this.getAttribute('data-id');
                     window.location.href = `/estabelecimentos/${idEstabelecimento}/edit`;
                 });
             });
 
             deleteButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault(); 
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
                     const idEstabelecimento = this.getAttribute('data-id');
                     handleDelete(idEstabelecimento);
                 });
             });
         });
     </script>
-
     <%- include('../partials/footer') %>
 </body>
 </html>

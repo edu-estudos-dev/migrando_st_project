@@ -7,7 +7,9 @@
 	--secondary-light-2: #e6e6e6;
 	--secondary-light-3: #d3d3d3;
 	--dark-color: #212529;
+	--dark-color-1: #3a3a3a;
 	--dark-color-2: #afafaf;
+	--dark-color-3: #dad9d9;
 	--light-blue-color: #cfcfff;
 }
 
@@ -25,6 +27,11 @@ main {
 	padding: 1em;
 	border-radius: 10px;
 }
+
+.main-estabelecimentos{
+	background-color: var(--dark-color-3) !important;
+}
+
 
 .header-spacer {
 	height: 100px !important;
@@ -233,94 +240,20 @@ figure {
 	display: flex;
 	justify-content: space-between;
 	padding: 0.5em 1.5em;
-	background-color: var(--primary-color-2);
+	background-color: var(--dark-color);
 	color: #ffffff;
 	align-items: center;
 	margin-bottom: 1em;
 	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-	/* padding: 1em; */
+	padding: 1em;
 	border-radius: 10px;
-}
-
-.col-id {
-	width: 3%;
 }
 
 .col-entrada-saida {
 	width: 4%;
 }
 
-.col-data {
-	width: 6%;
-}
 
-.col-tipo {
-	width: 10%;
-}
-
-.col-produto {
-	width: 6%;
-}
-
-.col-pagamento {
-	width: 8%;
-}
-
-.col-parcelas {
-	width: 6%;
-}
-
-.col-valor {
-	width: 6%;
-}
-
-.col-descricao {
-	width: 25%;
-}
-
-.col-usuario {
-	width: 6%;
-}
-
-.col-cadastro {
-	width: 6%;
-}
-
-.col-acoes {
-	width: 16%;
-}
-
-.col-estabelecimento {
-	width: 20%;
-}
-
-.col-status {
-	width: 5%;
-}
-
-.col-produto {
-	width: 13%;
-}
-
-.col-chave {
-	width: 4%;
-}
-
-.col-maquina {
-	width: 5%;
-}
-
-.col-endereco {
-	width: 20%;
-}
-
-.col-responsavel {
-	width: 8%;
-}
-
-.col-contato {
-	width: 7%;
-}
 
 .text-white > a {
 	color: var(--primary-color-2);
