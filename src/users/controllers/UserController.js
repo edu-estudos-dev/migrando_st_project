@@ -17,104 +17,105 @@ class UserController {
 
 	// Método para criar usuário
 	async createUser(req, res) {
-		try {
-			const { userName, password } = req.body;
-			const lowerCaseUser = userName.toLowerCase().trim();
-
-			if (!userName || !password) {
-				return res.render('register', {
-					erro: 'Preencha todos os campos!',
-					success: null
-				});
-			}
-
-			const userExists = await models.Users.findOne({
-				where: { userName: lowerCaseUser }
-			});
-
-			if (userExists) {
-				return res.render('register', {
-					erro: 'Usuário já cadastrado!',
-					success: null
-				});
-			}
-
-			// --- BLOCO DE CRIPTOGRAFIA ---
-			const salt = await bcrypt.genSalt(10);
-			const hashedPassword = await bcrypt.hash(password, salt);
-			// ----------------------------
-
-			await models.Users.create({
-				userName: lowerCaseUser,
-				password: hashedPassword
-			});
-
-			return res.render('users/formLogin', {
-				success: 'Registro concluído! Redirecionando...',
-				erro: null
-			});
-		} catch (error) {
-			console.error('Erro no registro:', error);
-			return res.render('users/register', {
-				erro: 'Erro interno no servidor',
-				success: null
-			});
-		}
-	}
+      try {
+          const { username, password } = req.body;
+          const lowerCaseUser = username.toLowerCase().trim();
+  
+          if (!username || !password) {
+              return res.render('users/register', {
+                  erro: 'Preencha todos os campos!',
+                  success: null
+              });
+          }
+  
+          const userExists = await models.Users.findOne({
+              where: { username: lowerCaseUser }
+          });
+  
+          if (userExists) {
+              return res.render('users/register', {
+                  erro: 'Usuário já cadastrado!',
+                  success: null
+              });
+          }
+  
+          const salt = await bcrypt.genSalt(10);
+          const hashedPassword = await bcrypt.hash(password, salt);
+  
+          await models.Users.create({
+              username: lowerCaseUser,
+              password: hashedPassword
+          });
+  
+          return res.render('users/register', {
+              success: 'Registro concluído com sucesso!',
+              erro: null
+          });
+      } catch (error) {
+          console.error('Erro no registro:', error);
+          return res.render('users/register', {
+              erro: 'Erro interno no servidor',
+              success: null
+          });
+      }
+  }
+  
 
 	// Autentica credenciais e inicia sessão do usuário
-	async login(req, res) {
-		const { userName, password } = req.body;
-
-		if (!userName || !password) {
-			return res.render('users/formLogin', {
-				erro: 'Usuário ou senha incorretos.',
-				success: null
-			});
-		}
-
-		try {
-			const userLowwerCase = userName.toLowerCase().trim();
-			const foundUser = await models.Users.findOne({
-				where: { userName: userLowwerCase }
-			});
-
-			if (!foundUser) {
-				return res.render('users/formLogin', {
-					erro: 'Usuário não cadastrado.',
-					success: null
-				});
-			}
-
-			const validPassword = await bcrypt.compare(password, foundUser.password);
-
-			if (validPassword) {
-				// Adicione esta verificação para garantir que a sessão existe
-				if (!req.session) {
-					throw new Error('Sessão não inicializada');
-				}
-
-				req.session.user = {
-					id: foundUser.id,
-					userName: foundUser.userName
-				};
-
-				return res.status(200).redirect('/painel');
-			} else {
-				return res.render('users/formLogin', {
-					erro: 'Senha incorreta',
-					success: null
-				});
-			}
-		} catch (error) {
-			console.error('Erro de autenticação:', error);
-			return res.render('users/formLogin', {
-				erro: 'Erro interno no servidor',
-				success: null
-			});
-		}
-	}
-
+   async login(req, res) {
+      const { username, password } = req.body;
+  
+      if (!username || !password) {
+          return res.render('users/formLogin', {
+              erro: 'Por favor, preencha todos os campos!',
+              success: null
+          });
+      }
+  
+      try {
+          const userLowerCase = username.toLowerCase().trim();
+          const foundUser = await models.Users.findOne({
+              where: { username: userLowerCase }
+          });
+  
+          if (!foundUser) {
+              return res.render('users/formLogin', {
+                  erro: 'Usuário não encontrado.',
+                  success: null
+              });
+          }
+  
+          const validPassword = await bcrypt.compare(password, foundUser.password);
+  
+          if (validPassword) {
+              // Adiciona os dados do usuário à sessão
+              req.session.user = {
+                  id: foundUser.id,
+                  username: foundUser.username
+              };
+  
+              // Retorna mensagem de sucesso ao frontend
+              return res.render('users/formLogin', {
+                  success: 'Login realizado com sucesso! Você será redirecionado.',
+                  erro: null
+              });
+          } else {
+              return res.render('users/formLogin', {
+                  erro: 'Senha incorreta!',
+                  success: null
+              });
+          }
+      } catch (error) {
+          console.error('Erro de autenticação:', error);
+          return res.render('users/formLogin', {
+              erro: 'Erro interno no servidor. Por favor, tente novamente.',
+              success: null
+          });
+      }
+  }
+  
+  
+  
 	// Metodo de logout
 	logout = (req, res) => {
 		req.session.destroy(err => {

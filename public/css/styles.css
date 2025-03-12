@@ -27,7 +27,8 @@ main {
 	border-radius: 10px;
 }
 
-.main-estabelecimentos{
+.main-estabelecimentos,
+.main-lancamentos{
 	background-color: var(--dark-color-3) !important;
 }
 

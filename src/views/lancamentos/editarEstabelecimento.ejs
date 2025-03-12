@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<style>
+    /* Media Query para notebooks */
+    @media (max-width: 1366px) {
+            .header-spacer-edit {
+                height: 50px !important;
+            }
+        }
+
+</style>
+<%- include('../partials/head', { title: 'Editar Estabelecimento' }) %>
+
+<body class="bg-light">
+    <%- include('../partials/header') %>
+
+    <div class="header-spacer header-spacer-edit "></div>
+
+    <div class="container w-75">
+        <div class="cabecalho">
+            <h1 class="mb-0">Editar Estabelecimento</h1>
+        </div>
+
+        <main class="mb-5 main-estabelecimentos">
+            <form id="editarForm" class="ps-3" action="/estabelecimentos/<%= estabelecimento.id %>/edit" method="POST">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="mb-1 fw-bold fs-5" for="estabelecimento">Nome do Estabelecimento</label>
+                        <input type="text" class="form-control mb-2" id="estabelecimento" name="estabelecimento" 
+                            value="<%= estabelecimento.estabelecimento %>" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="mb-1 fw-bold fs-5" for="responsavel_nome">Responsável</label>
+                        <input type="text" class="form-control mb-2" id="responsavel_nome" name="responsavel_nome" 
+                            value="<%= estabelecimento.responsavel_nome %>" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="mb-1 fw-bold fs-5" for="telefone_contato">Contato</label>
+                        <input type="tel" class="form-control mb-2" id="telefone_contato" name="telefone_contato" 
+                            value="<%= estabelecimento.telefone_contato %>" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="mb-1 fw-bold fs-5" for="status">Status</label>
+                        <select class="form-control" id="status" name="status" required>
+                            <option value="ativo" <%= estabelecimento.status === 'ativo' ? 'selected' : '' %>>Ativo</option>
+                            <option value="inativo" <%= estabelecimento.status === 'inativo' ? 'selected' : '' %>>Inativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <label class="mb-1 fw-bold fs-5" for="endereco">Endereço</label>
+                        <input type="text" class="form-control mb-2" id="endereco" name="endereco" 
+                            value="<%= estabelecimento.endereco %>" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="mb-1 fw-bold fs-5" for="bairro">Bairro</label>
+                        <input type="text" class="form-control mb-2" id="bairro" name="bairro" 
+                            value="<%= estabelecimento.bairro %>" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="mb-1 fw-bold fs-5" for="chave">Chave</label>
+                        <input type="text" class="form-control mb-2" id="chave" name="chave" 
+                            value="<%= estabelecimento.chave %>">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="mb-1 fw-bold fs-5" for="maquina">Máquina</label>
+                        <input type="text" class="form-control mb-2" id="maquina" name="maquina" 
+                            value="<%= estabelecimento.maquina %>">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <label class="mb-1 ms-4 fw-bold fs-5">Produto</label>
+                        <div class="form-check">
+                            <input class="form-check-input ms-1" type="checkbox" id="produto1" name="produto" 
+                                value="BOL" <%= estabelecimento.produto.includes('BOL') ? 'checked' : '' %>>
+                            <label class="form-check-label ms-2" for="produto1">BOL</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input ms-1" type="checkbox" id="produto2" name="produto" 
+                                value="FIG" <%= estabelecimento.produto.includes('FIG') ? 'checked' : '' %>>
+                            <label class="form-check-label ms-2" for="produto2">FIG</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input ms-1" type="checkbox" id="produto3" name="produto" 
+                                value="PEL" <%= estabelecimento.produto.includes('PEL') ? 'checked' : '' %>>
+                            <label class="form-check-label ms-2" for="produto3">PEL</label>
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <label class="mb-1 fw-bold fs-5" for="observacoes">Comentários</label>
+                        <textarea class="form-control mb-2" id="observacoes" name="observacoes" rows="3" 
+                            maxlength="255"><%= estabelecimento.observacoes %></textarea>
+                        <div class="form-text text-end" id="charCounter">
+                            <%= estabelecimento.observacoes ? estabelecimento.observacoes.length : 0 %>/255 caracteres
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center my-3">
+                    <a href="/estabelecimentos/table">
+                        <button type="button" class="btn btn-warning px-5 me-3 fs-5">Cancelar</button>
+                    </a>
+                    <button type="submit" class="btn btn-secondary px-5 fs-5">Atualizar</button>
+                </div>
+            </form>
+        </main>
+
+        <!-- Modal de Sucesso -->
+        <% if (success) { %>
+            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success bg-gradient text-white">
+                            <h5 class="modal-title d-flex align-items-center" id="successModalLabel">
+                                <i class="bi bi-check-circle-fill me-2"></i> Sucesso!
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center fs-5">
+                            <%= success %>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <a href="/estabelecimentos/table" class="btn btn-success btn-lg">OK</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- Modal de Erro -->
+        <% if (error) { %>
+            <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger bg-gradient text-white">
+                            <h5 class="modal-title d-flex align-items-center" id="errorModalLabel">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i> Erro!
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center fs-5">
+                            <%= error %>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-danger btn-lg" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- Modal de Informação (Neutro) -->
+        <% if (info) { %>
+            <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-warning bg-gradient text-dark">
+                            <h5 class="modal-title d-flex align-items-center" id="infoModalLabel">
+                                <i class="bi bi-info-circle-fill me-2"></i> Informações
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center fs-5">
+                            <%= info %>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-warning btn-lg" data-bs-dismiss="modal">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Formatação do telefone
+            const telefoneInput = document.getElementById('telefone_contato');
+            telefoneInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 11) value = value.slice(0, 11);
+                
+                let formatted = '';
+                if (value.length > 0) {
+                    formatted = '(' + value.slice(0, 2);
+                    if (value.length > 2) formatted += ') ' + value.slice(2, 7);
+                    if (value.length > 7) formatted += '-' + value.slice(7);
+                }
+                e.target.value = formatted;
+            });
+
+            // Validação do formulário
+            const form = document.getElementById('editarForm');
+            form.addEventListener('submit', (e) => {
+                const telefone = telefoneInput.value.replace(/\D/g, '');
+                if (telefone.length !== 11) {
+                    e.preventDefault();
+                    alert('O telefone deve conter exatamente 11 dígitos (DDD + número).');
+                    telefoneInput.classList.add('is-invalid');
+                    return;
+                } else {
+                    telefoneInput.classList.remove('is-invalid');
+                }
+
+                const checkboxes = document.querySelectorAll('input[name="produto"]');
+                const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                if (!isChecked) {
+                    e.preventDefault();
+                    alert('Por favor, marque pelo menos um produto.');
+                    return;
+                }
+
+                const requiredFields = document.querySelectorAll('[required]');
+                let isValid = true;
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.classList.add('is-invalid');
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Preencha todos os campos obrigatórios!');
+                    return;
+                }
+            });
+
+            // Contador de caracteres
+            const textarea = document.getElementById('observacoes');
+            const charCounter = document.getElementById('charCounter');
+            textarea.addEventListener('input', () => {
+                charCounter.textContent = `${textarea.value.length}/255 caracteres`;
+            });
+
+            // Controle dos modals
+            const successModalElement = document.getElementById('successModal');
+            const errorModalElement = document.getElementById('errorModal');
+            const infoModalElement = document.getElementById('infoModal');
+
+            if (successModalElement) {
+                const successModal = new bootstrap.Modal(successModalElement, { backdrop: 'static', keyboard: false });
+                successModal.show();
+                setTimeout(() => {
+                    successModal.hide();
+                    window.location.href = '/estabelecimentos/table';
+                }, 3000);
+            }
+
+            if (errorModalElement) {
+                const errorModal = new bootstrap.Modal(errorModalElement, { backdrop: 'static', keyboard: false });
+                errorModal.show();
+            }
+
+            if (infoModalElement) {
+                const infoModal = new bootstrap.Modal(infoModalElement, { backdrop: 'static', keyboard: false });
+                infoModal.show();
+            }
+        });
+    </script>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>
