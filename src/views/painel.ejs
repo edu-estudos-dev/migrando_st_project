@@ -16,7 +16,7 @@
    <div class="container-principal">
       <div class="container-painel">
          <h1 class="text-center">Painel de Controle</h1>
-         <span class="usuario-info">Usuário Ativo: <%= usuario?.userName || 'Visitante' %></span>
+         <span class="usuario-info">Usuário Ativo: <%= usuario?.username || 'Visitante' %></span>
          <div class="row">
             <div class="col administrativo">
                <h2>Administrativo</h2>
@@ -25,7 +25,7 @@
                   <a href="/estabelecimentos/add"><button class="btn btn-primary">Cadastrar Locais</button></a>
                </div>
                <div class="div-btn-adm">
-                  <a href="/lancamentos"><button class="btn btn-primary">Lançamentos</button></a>
+                  <a href="/lancamentos/table"><button class="btn btn-primary">Lançamentos</button></a>
                   <a href="/lancamentos/add"><button class="btn btn-primary">Fazer Lançamento</button></a>
                   <a href="/fluxo-de-caixa"><button class="btn btn-primary">Fluxo de Caixa</button></a>
                </div>

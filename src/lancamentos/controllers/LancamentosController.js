@@ -1,23 +1,21 @@
-import { models } from '../../models/index.js';
+import { models, sequelize } from '../../models/index.js';
 
-class EstabelecimentosController {
+class LancamentosController {
 	// Renderiza a tabela de Lançamentos
 	index = async (req, res) => {
 		const usuario = req.session.user;
 		try {
-			let estabelecimentos = await models.Estabelecimentos.findAll();
+			let lancamentos = await models.Lancamentos.findAll();
 
-			res.status(200).render('estabelecimentos/tabelaEstabelecimentos', {
-				title: 'Tabela Com os Estabelecimentos',
-				estabelecimentos,
+			res.status(200).render('lancamentos/tabelaLancamentos', {
+				title: 'Tabela Com os Lancamentos',
+				lancamentos,
 				search: false,
 				usuario
 			});
 		} catch (error) {
-			console.error('Erro ao obter todos os estabelecimentos.', error);
-			res
-				.status(500)
-				.json({ message: 'Erro ao obter todos os estabelecimentos.' });
+			console.error('Erro ao obter todos os lancamentos.', error);
+			res.status(500).json({ message: 'Erro ao obter todos os lancamentos.' });
 		}
 	};
 
@@ -54,30 +52,92 @@ class EstabelecimentosController {
 				}
 			}
 
-			const lancamento = {
-				entrada_saida: req.body.entrada_saida
-					? req.body.entrada_saida.trim()
-					: '',
+			const entradaSaida = req.body.entrada_saida
+				? req.body.entrada_saida.trim()
+				: '';
+			const tipoDeLancamento = req.body.tipo_de_lancamento
+				? req.body.tipo_de_lancamento.trim().toLowerCase()
+				: '';
+			const qtdeDeParcelas = req.body.qtde_de_parcelas
+				? parseInt(req.body.qtde_de_parcelas)
+				: 0;
+			const valorTotal = req.body.valor
+				? parseFloat(req.body.valor.replace(',', '.'))
+				: 0.0;
+
+			// Dados comuns a todos os registros
+			const lancamentoBase = {
+				entrada_saida: entradaSaida,
 				data: req.body.data ? req.body.data : null,
-				tipo_de_lancamento: req.body.tipo_de_lancamento
-					? req.body.tipo_de_lancamento.trim().toLowerCase()
-					: '',
+				tipo_de_lancamento: tipoDeLancamento,
 				produto: req.body.produto ? req.body.produto.trim().toLowerCase() : '',
 				forma_de_pagamento: req.body.forma_de_pagamento
 					? req.body.forma_de_pagamento.trim().toLowerCase()
 					: '',
-				qtde_de_parcelas: req.body.qtde_de_parcelas
-					? parseInt(req.body.qtde_de_parcelas)
-					: 0,
-				valor: req.body.valor
-					? parseFloat(req.body.valor.replace(',', '.'))
-					: 0.0,
 				descricao: req.body.descricao ? req.body.descricao.trim() : '',
-				usuario: usuario.username, // Alterado de usuario.userName para usuario.username
-				vencimento: req.body.vencimento ? req.body.vencimento : null
+				usuario: usuario.username
 			};
 
-			await models.Lancamentos.create(lancamento);
+			// Verificar se é uma compra parcelada (Saída, Compra, mais de 1 parcela)
+			if (
+				entradaSaida === 'Saida' &&
+				tipoDeLancamento === 'compra' &&
+				qtdeDeParcelas > 1
+			) {
+				// Iniciar uma transação para garantir consistência
+				const t = await sequelize.transaction();
+
+				try {
+					const valorPorParcela = valorTotal / qtdeDeParcelas; // Ex.: 3000 / 3 = 1000 por parcela
+					let vencimentoBase = req.body.vencimento
+						? new Date(req.body.vencimento)
+						: null;
+
+					// Criar um registro para cada parcela
+					for (let i = 0; i < qtdeDeParcelas; i++) {
+						let vencimentoParcela = null;
+						if (vencimentoBase) {
+							// Incrementar a data de vencimento para cada parcela (adicionar i meses)
+							vencimentoParcela = new Date(vencimentoBase);
+							vencimentoParcela.setMonth(vencimentoParcela.getMonth() + i);
+						}
+
+						const lancamentoParcela = {
+							...lancamentoBase,
+							qtde_de_parcelas: 1, // Cada registro representa uma parcela
+							valor: valorPorParcela, // Valor ajustado para a parcela
+							vencimento: vencimentoParcela
+								? vencimentoParcela.toISOString().split('T')[0]
+								: null, // Formato YYYY-MM-DD
+							dia_do_cadastro: new Date(), // Garante que dia_do_cadastro seja preenchido
+							ultima_edicao: new Date() // Garante que ultima_edicao seja preenchido
+						};
+
+						await models.Lancamentos.create(lancamentoParcela, {
+							transaction: t
+						});
+					}
+
+					// Confirmar a transação
+					await t.commit();
+				} catch (error) {
+					// Reverter a transação em caso de erro
+					await t.rollback();
+					throw error;
+				}
+			} else {
+				// Caso não seja uma compra parcelada, criar um único registro
+				const lancamento = {
+					...lancamentoBase,
+					qtde_de_parcelas: qtdeDeParcelas,
+					valor: valorTotal,
+					vencimento: req.body.vencimento ? req.body.vencimento : null,
+					dia_do_cadastro: new Date(), // Garante que dia_do_cadastro seja preenchido
+					ultima_edicao: new Date() // Garante que ultima_edicao seja preenchido
+				};
+
+				await models.Lancamentos.create(lancamento);
+			}
 
 			return res.redirect(
 				'/lancamentos/add?success=Lançamento cadastrado com sucesso!'
@@ -100,45 +160,41 @@ class EstabelecimentosController {
 		}
 	}
 
-	// Renderiza o formulário de edição de estabelecimento
-	async editEstabelecimentoForm(req, res) {
+	// Renderiza o formulário de edição de lancamento
+	async editLancamentoForm(req, res) {
 		const usuario = req.session.user;
 		try {
 			const id = req.params.id;
-			const estabelecimento = await models.Estabelecimentos.findByPk(id);
-			if (!estabelecimento) {
-				return res
-					.status(404)
-					.render('404', { title: 'Estabelecimento Not Found' });
+			const lancamento = await models.Lancamentos.findByPk(id);
+			if (!lancamento) {
+				return res.status(404).render('404', { title: 'Lancamento Not Found' });
 			}
 			const success = req.query.success || null;
 			const error = req.query.error || null;
 			const info = null; // Inicializa info como null para evitar o erro
 
-			res.status(200).render('estabelecimentos/editarEstabelecimento', {
-				title: 'Editar Estabelecimento',
-				estabelecimento,
+			res.status(200).render('lancamentos/editarLancamento', {
+				title: 'Editar Lancamento',
+				lancamento,
 				success,
 				error,
 				info,
 				usuario
 			});
 		} catch (error) {
-			console.error('Erro ao buscar dados do estabelecimento.', error);
-			res
-				.status(500)
-				.json({ message: 'Erro ao buscar dados do estabelecimento.' });
+			console.error('Erro ao buscar dados do lancamento.', error);
+			res.status(500).json({ message: 'Erro ao buscar dados do lancamento.' });
 		}
 	}
 
-	// Método para atualizar estabelecimento
-	async editEstabelecimento(req, res) {
+	// Método para atualizar lancamento
+	async editLancamento(req, res) {
 		const usuario = req.session.user;
 		const { id } = req.params;
 
 		try {
 			const requiredFields = [
-				'estabelecimento',
+				'lancamento',
 				'status',
 				'endereco',
 				'bairro',
@@ -157,14 +213,14 @@ class EstabelecimentosController {
 				throw new Error('Selecione pelo menos um produto');
 			}
 
-			const currentEstabelecimento = await models.Estabelecimentos.findByPk(id);
-			if (!currentEstabelecimento) {
-				throw new Error('Estabelecimento não encontrado');
+			const currentLancamento = await models.Lancamentos.findByPk(id);
+			if (!currentLancamento) {
+				throw new Error('Lancamento não encontrado');
 			}
 
-			const estabelecimentoData = {
-				estabelecimento: req.body.estabelecimento
-					? req.body.estabelecimento.trim().toUpperCase()
+			const lancamentoData = {
+				lancamento: req.body.lancamento
+					? req.body.lancamento.trim().toUpperCase()
 					: '',
 				status: req.body.status ? req.body.status.trim().toLowerCase() : '',
 				produto: Array.isArray(produtos)
@@ -193,16 +249,16 @@ class EstabelecimentosController {
 					: ''
 			};
 
-			const hasChanges = Object.keys(estabelecimentoData).some(key => {
-				let currentValue = currentEstabelecimento[key] || '';
-				let newValue = estabelecimentoData[key] || '';
+			const hasChanges = Object.keys(lancamentoData).some(key => {
+				let currentValue = currentLancamento[key] || '';
+				let newValue = lancamentoData[key] || '';
 				return currentValue.toString() !== newValue.toString();
 			});
 
 			if (!hasChanges) {
-				return res.render('estabelecimentos/editarEstabelecimento', {
-					title: 'Editar Estabelecimento',
-					estabelecimento: currentEstabelecimento,
+				return res.render('lancamentos/editarLancamento', {
+					title: 'Editar Lancamento',
+					lancamento: currentLancamento,
 					info: 'Nenhuma alteração foi feita.',
 					success: null,
 					error: null,
@@ -210,15 +266,14 @@ class EstabelecimentosController {
 				});
 			}
 
-			const [affectedRows] = await models.Estabelecimentos.update(
-				estabelecimentoData,
-				{ where: { id } }
-			);
+			const [affectedRows] = await models.Lancamentos.update(lancamentoData, {
+				where: { id }
+			});
 
 			if (affectedRows === 0) {
-				return res.render('estabelecimentos/editarEstabelecimento', {
-					title: 'Editar Estabelecimento',
-					estabelecimento: currentEstabelecimento,
+				return res.render('lancamentos/editarLancamento', {
+					title: 'Editar Lancamento',
+					lancamento: currentLancamento,
 					info: 'Nenhuma alteração foi feita.',
 					success: null,
 					error: null,
@@ -226,10 +281,10 @@ class EstabelecimentosController {
 				});
 			}
 
-			return res.render('estabelecimentos/editarEstabelecimento', {
-				title: 'Editar Estabelecimento',
-				estabelecimento: estabelecimentoData,
-				success: 'Estabelecimento atualizado com sucesso!',
+			return res.render('lancamentos/editarLancamento', {
+				title: 'Editar Lancamento',
+				lancamento: lancamentoData,
+				success: 'Lancamento atualizado com sucesso!',
 				info: null,
 				error: null,
 				usuario
@@ -241,9 +296,9 @@ class EstabelecimentosController {
 				errorMessage = 'Já existe um registro com esses dados';
 			}
 
-			return res.render('estabelecimentos/editarEstabelecimento', {
-				title: 'Editar Estabelecimento',
-				estabelecimento: req.body,
+			return res.render('lancamentos/editarLancamento', {
+				title: 'Editar Lancamento',
+				lancamento: req.body,
 				success: null,
 				info: null,
 				error: errorMessage,
@@ -252,56 +307,91 @@ class EstabelecimentosController {
 		}
 	}
 
-	// Método para visualizar estabelecimento
-	async viewEstabelecimento(req, res) {
+	// Método para visualizar lançamento
+	async viewLancamento(req, res) {
 		const usuario = req.session.user;
 		try {
 			const id = req.params.id;
-			const estabelecimento = await models.Estabelecimentos.findByPk(id);
-			if (!estabelecimento) {
-				return res
-					.status(404)
-					.render('404', { title: 'Estabelecimento Not Found' });
+			const lancamento = await models.Lancamentos.findByPk(id);
+			if (!lancamento) {
+				return res.status(404).render('404', { title: 'Lancamento Not Found' });
 			}
 
-			res.status(200).render('estabelecimentos/visualizarEstabelecimento', {
-				title: 'Visualizar Estabelecimento',
-				estabelecimento,
+			// Log para depuração
+			console.log('Valores brutos do lançamento:', {
+				dia_do_cadastro: lancamento.dia_do_cadastro,
+				ultima_edicao: lancamento.ultima_edicao,
+				createdAt: lancamento.createdAt,
+				updatedAt: lancamento.updatedAt,
+				valor: lancamento.valor
+			});
+
+			// Comparar dia_do_cadastro e ultima_edicao
+			const isNotEdited =
+				lancamento.dia_do_cadastro &&
+				lancamento.ultima_edicao &&
+				new Date(lancamento.dia_do_cadastro).getTime() ===
+					new Date(lancamento.ultima_edicao).getTime();
+
+			// Formatar as datas e o valor no back-end
+			const formattedLancamento = {
+				...lancamento.dataValues,
+				dia_do_cadastro: lancamento.dia_do_cadastro
+					? new Date(lancamento.dia_do_cadastro).toLocaleDateString('pt-BR')
+					: 'Não informado',
+				ultima_edicao: isNotEdited
+					? 'Ainda sem edição'
+					: lancamento.ultima_edicao
+					? new Date(lancamento.ultima_edicao).toLocaleDateString('pt-BR')
+					: 'Não informado',
+				vencimento: lancamento.vencimento
+					? new Date(lancamento.vencimento).toLocaleDateString('pt-BR')
+					: 'Não informado',
+				valor: lancamento.valor
+					? Number(lancamento.valor).toLocaleString('pt-BR', {
+							style: 'currency',
+							currency: 'BRL'
+					  })
+					: 'R$ 0,00'
+			};
+
+			// Log para verificar o valor formatado
+			console.log('Valor formatado:', formattedLancamento.valor);
+
+			res.status(200).render('lancamentos/visualizarLancamentos', {
+				title: 'Visualizar Lancamento',
+				lancamento: formattedLancamento,
 				usuario
 			});
 		} catch (error) {
 			console.error(
-				'Erro ao buscar dados do estabelecimento para visualização.',
+				'Erro ao buscar dados do lancamento para visualização.',
 				error
 			);
-			res
-				.status(500)
-				.json({ message: 'Erro ao buscar dados do estabelecimento.' });
+			res.status(500).json({ message: 'Erro ao buscar dados do lancamento.' });
 		}
 	}
 
-	async excluirEstabelecimento(req, res) {
+	async excluirLancamento(req, res) {
 		const id = req.params.id;
 		try {
-			const estabelecimento = await models.Estabelecimentos.findByPk(id);
+			const lancamento = await models.Lancamentos.findByPk(id);
 
-			if (!estabelecimento) {
-				return res
-					.status(404)
-					.render('404', { title: 'Estabelecimento Not Found' });
+			if (!lancamento) {
+				return res.status(404).render('404', { title: 'Lancamento Not Found' });
 			}
 
-			await models.Estabelecimentos.destroy({ where: { id } });
-			console.log(`Estabelecimento com ID ${id} excluído com sucesso.`); // Depuração
+			await models.Lancamentos.destroy({ where: { id } });
+			console.log(`Lancamento com ID ${id} excluído com sucesso.`); // Depuração
 			return res.status(204).end();
 		} catch (error) {
 			console.error('Erro na exclusão:', error);
 			return res.status(500).json({
-				message: 'Erro ao excluir estabelecimento',
+				message: 'Erro ao excluir lancamento',
 				error: error.message
 			});
 		}
 	}
 }
 
-export default new EstabelecimentosController();
+export default new LancamentosController();

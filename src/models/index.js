@@ -1,4 +1,3 @@
-// models/index.js (corrigido)
 import { Sequelize } from 'sequelize';
 import UserModel from '../users/models/UserModel.js';
 import EstabelecimentosModel from '../estabelecimentos/models/EstabelecimentosModel.js';
@@ -16,7 +15,7 @@ const sequelize = new Sequelize('st_project_db', 'root', '', {
 const models = {
     Users: UserModel(sequelize),
     Estabelecimentos: EstabelecimentosModel(sequelize),
-    Lancamentos: LancamentosModel(sequelize) // Adicionado
+    Lancamentos: LancamentosModel(sequelize)
 };
 
 // Configurar associações (se houver)

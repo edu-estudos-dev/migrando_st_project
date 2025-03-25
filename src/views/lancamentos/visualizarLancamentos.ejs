@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<%- include('../partials/head', { title: 'Visualizar Lançamento' }) %>
+
+<body class="bg-light">
+    <%- include('../partials/header') %>
+
+    <div class="header-spacer"></div>
+
+    <div class="container w-75">
+        <main class="mb-5 main-lancamentos">
+            <div class="card shadow-sm border border-primary border-opacity-25 rounded-3">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center ">
+                    <h5 class="mb-0 fw-bold pt-1"><i class="bi bi-eye-fill me-2 fs-5"></i> Dados do Lançamento</h5>
+                    <a href="/lancamentos/table" class="btn btn-secondary btn-sm">Voltar</a>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="card-title mb-0 fw-bold">Lancamento: <%= lancamento.descricao.toUpperCase() %></h4>
+                        <span class="badge bg-secondary p-2">ID: <%= lancamento.id %></span>
+                    </div>
+                    <div class="row">
+                        <!-- Coluna Esquerda -->
+                        <div class="col-md-6">
+                            <p><strong>Usuário:</strong> <%= lancamento.usuario %></p>
+                            <p><strong>Dia do Cadastro:</strong> <%= lancamento.dia_do_cadastro %></p>
+                            <p><strong>Entrada / Saída:</strong> <%= lancamento.entrada_saida %></p>
+                            <p><strong>Tipo de Lançamento:</strong> <%= lancamento.tipo_de_lancamento %></p>
+                            <p><strong>Produto:</strong> <%= lancamento.produto %></p>
+                        </div>
+                        <!-- Coluna Direita -->
+                        <div class="col-md-6">
+                            <p><strong>Forma de Pagamento:</strong> <%= lancamento.forma_de_pagamento %></p>         
+                            <p><strong>Qtde. de Parcelas:</strong> <%= lancamento.qtde_de_parcelas %></p>
+                            <p><strong>Valor:</strong> <%= lancamento.valor %></p>
+                            <p><strong>Vencimento:</strong> <%= lancamento.vencimento %></p>
+                            <p><strong>Última Edição:</strong> <%= lancamento.ultima_edicao %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Função para formatar valor para moeda brasileira
+            function formatCurrency(value) {
+                const numValue = typeof value === 'string' ? parseFloat(value.replace(',', '.')) : value;
+                return numValue.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                });
+            }
+
+            // Função para formatar data do formato americano (YYYY-MM-DD) para brasileiro (DD/MM/YYYY)
+            function formatDate(dateStr) {
+                if (!dateStr || dateStr === 'Invalid Date') return 'Não informado';
+                // Verifica se já está no formato brasileiro (caso já tenha sido formatado no servidor)
+                if (dateStr.includes('/')) return dateStr;
+                const [year, month, day] = dateStr.split('-');
+                return `${day}/${month}/${year}`;
+            }
+
+            // Formatar o valor
+            const valorElement = document.getElementById('valor');
+            if (valorElement) {
+                const rawValor = valorElement.textContent.trim();
+                valorElement.textContent = formatCurrency(rawValor);
+            }
+
+            // Formatar a data de vencimento
+            const vencimentoElement = document.getElementById('vencimento');
+            if (vencimentoElement) {
+                const rawVencimento = vencimentoElement.textContent.trim();
+                vencimentoElement.textContent = formatDate(rawVencimento);
+            }
+
+            // As datas de createdAt e updatedAt já estão formatadas com toLocaleDateString no EJS,
+            // mas podemos garantir consistência se necessário
+            const createdAtElement = document.getElementById('createdAt');
+            if (createdAtElement) {
+                const rawCreatedAt = '<%= lancamento.createdAt %>'; // Pega o valor bruto do servidor
+                createdAtElement.textContent = formatDate(rawCreatedAt);
+            }
+
+            const updatedAtElement = document.getElementById('updatedAt');
+            if (updatedAtElement) {
+                const rawUpdatedAt = '<%= lancamento.updatedAt %>'; // Pega o valor bruto do servidor
+                updatedAtElement.textContent = formatDate(rawUpdatedAt);
+            }
+        });
+    </script>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

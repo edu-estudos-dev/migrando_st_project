@@ -1,5 +1,4 @@
 <style>
-    /* Estilos existentes */
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background-color: #f8f9fa;
@@ -58,73 +57,75 @@
 
 <%- include('../partials/head', { title: 'Login' }) %>
 
-<div class="container-fluid d-flex align-items-center justify-content-center min-vh-100">
-    <div class="caixa-externa">
-        <h1 class="text-center display-6 fw-bold mb-4 text-white">Login</h1>
-        <hr class="border-light">
+    <div class="container-fluid d-flex align-items-center justify-content-center min-vh-100">
+        <div class="caixa-externa">
+            <h1 class="text-center display-6 fw-bold mb-4 text-white">Login</h1>
+            <hr class="border-light">
 
-        <form action="/users/" method="POST" id="loginForm">
-            <div class="form-group mb-3">
-                <label for="username" class="form-label text-white">Usuário</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input type="text" class="form-control input-custom" id="username" name="username"
-                        placeholder="Entre com o usuário" autocomplete="username" required>
+            <form action="/users/" method="POST" id="loginForm">
+                <div class="form-group mb-3">
+                    <label for="username" class="form-label text-white">Usuário</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control input-custom" id="username" name="username"
+                            placeholder="Entre com o usuário" autocomplete="username" required>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group mb-3">
-                <label for="password" class="form-label text-white">Senha</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <input type="password" class="form-control input-custom" id="password" name="password"
-                        placeholder="Sua Senha" autocomplete="current-password" required>
+                <div class="form-group mb-3">
+                    <label for="password" class="form-label text-white">Senha</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control input-custom" id="password" name="password"
+                            placeholder="Sua Senha" autocomplete="current-password" required>
+                    </div>
                 </div>
-            </div>
-            <div class="d-flex justify-content-center">
-                <button type="submit" class="btn btn-custom mt-4 w-100">Entrar</button>
-            </div>
-        </form>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-custom mt-4 w-100">Entrar</button>
+                </div>
+            </form>
 
-        <div class="text-center mt-3">
-            <a href="/users/register" class="text-white text-decoration-none"> Primeiro acesso? Cadastre-se aqui
-            </a>
+            <div class="text-center mt-3">
+                <a href="/users/register" class="text-white text-decoration-none"> Primeiro acesso? Cadastre-se aqui
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-    const successMessage = "<%= success %>"; 
-    const errorMessage = "<%= erro %>"; 
+    <script>
+        const successMessage = "<%= success %>";
+        const errorMessage = "<%= erro %>";
 
-    // Exibe SweetAlert2 para mensagens de sucesso
-    if (successMessage) {
-        Swal.fire({
-            icon: 'success',
-            title: 'Sucesso!',
-            text: successMessage,
-            confirmButtonColor: '#2575fc'
-        }).then(() => {
-            window.location.href = '/painel'; // Redireciona para o painel no sucesso
-        });
-    }
+        // Exibe SweetAlert2 para mensagens de sucesso
+        if (successMessage) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso!',
+                text: successMessage,
+                timer: 2000,
+                confirmButtonColor: '#2575fc'
+            }).then(() => {
+                window.location.href = '/painel';
+            });
+        }
 
-    // Exibe SweetAlert2 para mensagens de erro
-    if (errorMessage) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Erro!',
-            text: errorMessage,
-            confirmButtonColor: '#ff4b2b'
-        });
-    }
-</script>
+        // Exibe SweetAlert2 para mensagens de erro
+        if (errorMessage) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro!',
+                text: errorMessage,
+                timer: 2000,
+                confirmButtonColor: '#ff4b2b'
+            });
+        }
+    </script>
 
-<script>
-    // Posiciona o cursor no campo "Usuário" ao carregar a página
-    window.onload = function () {
-        document.getElementById('username').focus();
-    };
-</script>
+    <script>
+        // Posiciona o cursor no campo "Usuário" ao carregar a página
+        window.onload = function () {
+            document.getElementById('username').focus();
+        };
+    </script>

@@ -10,7 +10,7 @@ lancamentosRouter
     .post(LancamentosController.addLancamento);
 
 // // Rota para listar todos os lançamentos
-// lancamentosRouter.get('/table', LancamentosController.index);
+lancamentosRouter.get('/table', LancamentosController.index);
 
 // // Rotas de edição
 // lancamentosRouter
@@ -19,7 +19,7 @@ lancamentosRouter
 //     .post(LancamentosController.editLancamento);
 
 // // Rota para visualizar os detalhes de um lançamento
-// lancamentosRouter.get('/:id/view', LancamentosController.viewLancamento);
+lancamentosRouter.get('/:id/view', LancamentosController.viewLancamento);
 
 // // Rota para excluir um lançamento
 // lancamentosRouter.delete('/:id', LancamentosController.excluirLancamento);
