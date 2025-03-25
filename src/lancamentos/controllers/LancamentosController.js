@@ -26,7 +26,6 @@ class LancamentosController {
 		const error = req.query.error || null;
 
 		if (req.method === 'GET') {
-			console.log('Usuário da sessão:', usuario);
 			return res.render('lancamentos/cadastrarLancamentos', {
 				title: 'Cadastrar Lançamento',
 				success,
@@ -43,7 +42,8 @@ class LancamentosController {
 				'produto',
 				'forma_de_pagamento',
 				'qtde_de_parcelas',
-				'valor'
+				'valor',
+				'descricao'
 			];
 
 			for (const field of requiredFields) {
@@ -102,15 +102,23 @@ class LancamentosController {
 							vencimentoParcela.setMonth(vencimentoParcela.getMonth() + i);
 						}
 
+						// Ajustar a descrição para incluir o número da parcela
+						const descricaoParcela = lancamentoBase.descricao
+							? `${lancamentoBase.descricao} (Parcela ${i + 1} de ${qtdeDeParcelas})`
+							: ` ${i + 1} de ${qtdeDeParcelas}`;
+
 						const lancamentoParcela = {
 							...lancamentoBase,
 							qtde_de_parcelas: 1, // Cada registro representa uma parcela
+							parcela_atual: i + 1, // Número da parcela atual (1, 2, 3, ...)
+							total_parcelas: qtdeDeParcelas, // Total de parcelas
 							valor: valorPorParcela, // Valor ajustado para a parcela
+							descricao: descricaoParcela, // Descrição ajustada
 							vencimento: vencimentoParcela
 								? vencimentoParcela.toISOString().split('T')[0]
 								: null, // Formato YYYY-MM-DD
-							dia_do_cadastro: new Date(), // Garante que dia_do_cadastro seja preenchido
-							ultima_edicao: new Date() // Garante que ultima_edicao seja preenchido
+							dia_do_cadastro: new Date(),
+							ultima_edicao: new Date()
 						};
 
 						await models.Lancamentos.create(lancamentoParcela, {
@@ -130,10 +138,12 @@ class LancamentosController {
 				const lancamento = {
 					...lancamentoBase,
 					qtde_de_parcelas: qtdeDeParcelas,
+					parcela_atual: null, // Não é parcelado
+					total_parcelas: null, // Não é parcelado
 					valor: valorTotal,
 					vencimento: req.body.vencimento ? req.body.vencimento : null,
-					dia_do_cadastro: new Date(), // Garante que dia_do_cadastro seja preenchido
-					ultima_edicao: new Date() // Garante que ultima_edicao seja preenchido
+					dia_do_cadastro: new Date(),
+					ultima_edicao: new Date()
 				};
 
 				await models.Lancamentos.create(lancamento);
@@ -323,7 +333,12 @@ class LancamentosController {
 				ultima_edicao: lancamento.ultima_edicao,
 				createdAt: lancamento.createdAt,
 				updatedAt: lancamento.updatedAt,
-				valor: lancamento.valor
+				valor: lancamento.valor,
+				descricao: lancamento.descricao,
+				qtde_de_parcelas: lancamento.qtde_de_parcelas,
+				total_parcelas: lancamento.total_parcelas,
+				parcela_atual: lancamento.parcela_atual,
+				data: lancamento.data // Adicionando o campo data para depuração
 			});
 
 			// Comparar dia_do_cadastro e ultima_edicao
@@ -347,16 +362,31 @@ class LancamentosController {
 				vencimento: lancamento.vencimento
 					? new Date(lancamento.vencimento).toLocaleDateString('pt-BR')
 					: 'Não informado',
+				data: lancamento.data
+					? new Date(lancamento.data).toLocaleDateString('pt-BR')
+					: 'Não informado', // Adicionando a formatação da data retroativa
 				valor: lancamento.valor
 					? Number(lancamento.valor).toLocaleString('pt-BR', {
 							style: 'currency',
 							currency: 'BRL'
 					  })
-					: 'R$ 0,00'
+					: 'R$ 0,00',
+				descricao: lancamento.descricao || 'Sem descrição',
+				qtde_de_parcelas:
+					lancamento.total_parcelas !== null
+						? lancamento.total_parcelas
+						: lancamento.qtde_de_parcelas,
+				parcela_atual: lancamento.parcela_atual,
+				total_parcelas: lancamento.total_parcelas
 			};
 
-			// Log para verificar o valor formatado
-			console.log('Valor formatado:', formattedLancamento.valor);
+			// Log para verificar os valores formatados
+			console.log('Valores formatados:', {
+				dia_do_cadastro: formattedLancamento.dia_do_cadastro,
+				data: formattedLancamento.data,
+				valor: formattedLancamento.valor,
+				qtde_de_parcelas: formattedLancamento.qtde_de_parcelas
+			});
 
 			res.status(200).render('lancamentos/visualizarLancamentos', {
 				title: 'Visualizar Lancamento',

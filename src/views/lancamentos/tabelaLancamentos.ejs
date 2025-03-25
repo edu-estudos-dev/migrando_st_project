@@ -75,43 +75,43 @@
         /* Entrada/Saida */
         .table-custom th:nth-child(2),
         .table-custom td:nth-child(2) {
-            width: 4% !important;
+            width: 3% !important;
         }
 
         /* data */
         .table-custom th:nth-child(3),
         .table-custom td:nth-child(3) {
-            width: 5% !important;
+            width: 4% !important;
         }
 
         /* tipo de lancamentro */
         .table-custom th:nth-child(4),
         .table-custom td:nth-child(4) {
-            width: 8% !important;
+            width: 6% !important;
         }
 
         /* produto */
         .table-custom th:nth-child(5),
         .table-custom td:nth-child(5) {
-            width: 5% !important;
+            width: 4% !important;
         }
 
         /* forma de pagamento */
         .table-custom th:nth-child(6),
         .table-custom td:nth-child(6) {
-            width: 5% !important;
+            width: 4% !important;
         }
 
         /* parcelas */
         .table-custom th:nth-child(7),
         .table-custom td:nth-child(7) {
-            width: 5% !important;
+            width: 3% !important;
         }
 
         /* Valor */
         .table-custom th:nth-child(8),
         .table-custom td:nth-child(8) {
-            width: 5% !important;
+            width: 4% !important;
         }
 
 
@@ -124,7 +124,7 @@
         /* Vencimento */
         .table-custom th:nth-child(10),
         .table-custom td:nth-child(10) {
-            width: 5% !important;
+            width: 4% !important;
         }
 
         /* açoes */
@@ -203,7 +203,7 @@
             </div>
             <div class="col-6 d-flex justify-content-end align-items-center">
                 <a type="button" class="btn btn-secondary mb-0" href="/lancamentos/add">
-                    <i class="bi bi-person-add"></i> Novo Lancamentos
+                    Novo Lançamento
                 </a>
             </div>
         </div>
@@ -217,7 +217,7 @@
                         <th scope="col">TIPO DE LANÇAMENTO</th>
                         <th scope="col">PRODUTO</th>
                         <th scope="col">PAGAMENTO</th>
-                        <th scope="col">QTDE. DE PARCELAS</th>
+                        <th scope="col">PARCELAS</th>
                         <th scope="col">VALOR</th>
                         <th scope="col">DESCRIÇÃO</th>
                         <th scope="col">VENCIMENTO</th>
@@ -245,8 +245,8 @@
                             <td class="col-responsavel text-center" data-label="Forma-de-pagamento">
                                 <%= lancamentos.forma_de_pagamento %>
                             </td>
-                            <td class="col-responsavel text-center" data-label="Quantidade-de-parcelas">
-                                <%= lancamentos.qtde_de_parcelas %>
+                            <td class="col-responsavel text-center" data-label="Qtde-de-parcelas">
+                                <%= lancamentos.total_parcelas !== null ? lancamentos.total_parcelas : lancamentos.qtde_de_parcelas %>
                             </td>
                             <td class="col-responsavel text-center" data-label="Vaçor">
                                 <%= lancamentos.valor %>

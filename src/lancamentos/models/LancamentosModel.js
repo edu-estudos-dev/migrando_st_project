@@ -31,12 +31,23 @@ export default sequelize => {
             type: DataTypes.INTEGER(11),
             allowNull: false
         },
+        parcela_atual: { // Novo campo
+            type: DataTypes.INTEGER(11),
+            allowNull: true,
+            defaultValue: null
+        },
+        total_parcelas: { // Novo campo
+            type: DataTypes.INTEGER(11),
+            allowNull: true,
+            defaultValue: null
+        },
         valor: {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false
         },
         descricao: {
-            type: DataTypes.TEXT
+            type: DataTypes.TEXT,
+            allowNull: false
         },
         usuario: {
             type: DataTypes.STRING(100),
@@ -54,9 +65,9 @@ export default sequelize => {
             type: DataTypes.DATEONLY
         }
     }, {
-        timestamps: true, // Habilita timestamps automáticos
-        createdAt: 'dia_do_cadastro', // Mapeia para dia_do_cadastro
-        updatedAt: 'ultima_edicao' // Mapeia para ultima_edicao
+        timestamps: true,
+        createdAt: 'dia_do_cadastro',
+        updatedAt: 'ultima_edicao'
     });
     return Lancamentos;
 };

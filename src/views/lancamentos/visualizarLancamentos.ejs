@@ -10,28 +10,33 @@
     <div class="container w-75">
         <main class="mb-5 main-lancamentos">
             <div class="card shadow-sm border border-primary border-opacity-25 rounded-3">
-                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center ">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold pt-1"><i class="bi bi-eye-fill me-2 fs-5"></i> Dados do Lançamento</h5>
                     <a href="/lancamentos/table" class="btn btn-secondary btn-sm">Voltar</a>
                 </div>
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="card-title mb-0 fw-bold">Lancamento: <%= lancamento.descricao.toUpperCase() %></h4>
+                        <h4 class="card-title mb-0 fw-bold">Lançamento: <%= lancamento.descricao.toUpperCase() %></h4>
                         <span class="badge bg-secondary p-2">ID: <%= lancamento.id %></span>
                     </div>
                     <div class="row">
                         <!-- Coluna Esquerda -->
                         <div class="col-md-6">
                             <p><strong>Usuário:</strong> <%= lancamento.usuario %></p>
-                            <p><strong>Dia do Cadastro:</strong> <%= lancamento.dia_do_cadastro %></p>
+                            <p><strong>Data de Cadastro:</strong> <%= lancamento.dia_do_cadastro %></p>
+                            <p><strong>Data da Compra:</strong> <%= lancamento.data %></p>
                             <p><strong>Entrada / Saída:</strong> <%= lancamento.entrada_saida %></p>
                             <p><strong>Tipo de Lançamento:</strong> <%= lancamento.tipo_de_lancamento %></p>
                             <p><strong>Produto:</strong> <%= lancamento.produto %></p>
                         </div>
                         <!-- Coluna Direita -->
                         <div class="col-md-6">
-                            <p><strong>Forma de Pagamento:</strong> <%= lancamento.forma_de_pagamento %></p>         
-                            <p><strong>Qtde. de Parcelas:</strong> <%= lancamento.qtde_de_parcelas %></p>
+                            <p><strong>Forma de Pagamento:</strong> <%= lancamento.forma_de_pagamento %></p>
+                            <% if (lancamento.total_parcelas !== null) { %>
+                                <p><strong>Parcela:</strong> <%= lancamento.parcela_atual %> de <%= lancamento.total_parcelas %></p>
+                            <% } else { %>
+                                <p><strong>Qtde. de Parcelas:</strong> <%= lancamento.qtde_de_parcelas %></p>
+                            <% } %>
                             <p><strong>Valor:</strong> <%= lancamento.valor %></p>
                             <p><strong>Vencimento:</strong> <%= lancamento.vencimento %></p>
                             <p><strong>Última Edição:</strong> <%= lancamento.ultima_edicao %></p>
@@ -58,39 +63,46 @@
 
             // Função para formatar data do formato americano (YYYY-MM-DD) para brasileiro (DD/MM/YYYY)
             function formatDate(dateStr) {
-                if (!dateStr || dateStr === 'Invalid Date') return 'Não informado';
+                if (!dateStr || dateStr === 'Invalid Date' || dateStr === 'Não informado') return 'Não informado';
                 // Verifica se já está no formato brasileiro (caso já tenha sido formatado no servidor)
                 if (dateStr.includes('/')) return dateStr;
                 const [year, month, day] = dateStr.split('-');
                 return `${day}/${month}/${year}`;
             }
 
-            // Formatar o valor
-            const valorElement = document.getElementById('valor');
-            if (valorElement) {
+            // Formatar o valor (se necessário)
+            const valorElement = document.querySelector('p strong:contains("Valor:")').nextSibling;
+            if (valorElement && !valorElement.textContent.includes('R$')) {
                 const rawValor = valorElement.textContent.trim();
                 valorElement.textContent = formatCurrency(rawValor);
             }
 
-            // Formatar a data de vencimento
-            const vencimentoElement = document.getElementById('vencimento');
-            if (vencimentoElement) {
+            // Formatar a data de vencimento (se necessário)
+            const vencimentoElement = document.querySelector('p strong:contains("Vencimento:")').nextSibling;
+            if (vencimentoElement && !vencimentoElement.textContent.includes('/')) {
                 const rawVencimento = vencimentoElement.textContent.trim();
                 vencimentoElement.textContent = formatDate(rawVencimento);
             }
 
-            // As datas de createdAt e updatedAt já estão formatadas com toLocaleDateString no EJS,
-            // mas podemos garantir consistência se necessário
-            const createdAtElement = document.getElementById('createdAt');
-            if (createdAtElement) {
-                const rawCreatedAt = '<%= lancamento.createdAt %>'; // Pega o valor bruto do servidor
-                createdAtElement.textContent = formatDate(rawCreatedAt);
+            // Formatar a data de cadastro (se necessário)
+            const diaCadastroElement = document.querySelector('p strong:contains("Data de Cadastro:")').nextSibling;
+            if (diaCadastroElement && !diaCadastroElement.textContent.includes('/')) {
+                const rawDiaCadastro = diaCadastroElement.textContent.trim();
+                diaCadastroElement.textContent = formatDate(rawDiaCadastro);
             }
 
-            const updatedAtElement = document.getElementById('updatedAt');
-            if (updatedAtElement) {
-                const rawUpdatedAt = '<%= lancamento.updatedAt %>'; // Pega o valor bruto do servidor
-                updatedAtElement.textContent = formatDate(rawUpdatedAt);
+            // Formatar a data da compra (se necessário)
+            const dataCompraElement = document.querySelector('p strong:contains("Data da Compra:")').nextSibling;
+            if (dataCompraElement && !dataCompraElement.textContent.includes('/')) {
+                const rawDataCompra = dataCompraElement.textContent.trim();
+                dataCompraElement.textContent = formatDate(rawDataCompra);
+            }
+
+            // Formatar a data de última edição (se necessário)
+            const ultimaEdicaoElement = document.querySelector('p strong:contains("Última Edição:")').nextSibling;
+            if (ultimaEdicaoElement && ultimaEdicaoElement.textContent !== 'Ainda sem edição' && !ultimaEdicaoElement.textContent.includes('/')) {
+                const rawUltimaEdicao = ultimaEdicaoElement.textContent.trim();
+                ultimaEdicaoElement.textContent = formatDate(rawUltimaEdicao);
             }
         });
     </script>
