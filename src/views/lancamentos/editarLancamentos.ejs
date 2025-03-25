@@ -1,142 +1,186 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<style>
-    /* Media Query para notebooks */
-    @media (max-width: 1366px) {
-            .header-spacer-edit {
+<head>
+    <%- include('../partials/head', { title: 'Editar Lançamento' }) %>
+    <style>
+        /* Media Query para notebooks */
+        @media (max-width: 1366px) {
+            .header-spacer-cadastrar {
                 height: 50px !important;
             }
         }
 
-</style>
-<%- include('../partials/head', { title: 'Editar Lançamento' }) %>
+        .bg-warning {
+            background-color: #ffc107 !important;
+        }
+        
+        .modal-header {
+            border-bottom: none;
+        }
+        
+        #charCounter {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
 
 <body class="bg-light">
     <%- include('../partials/header') %>
 
-    <div class="header-spacer header-spacer-edit "></div>
+    <div class="header-spacer header-spacer-cadastrar"></div>
 
     <div class="container w-75">
         <div class="cabecalho">
-            <h1 class="mb-0">Editar Lancamento</h1>
+            <h1 class="mb-0">Editar Lançamento</h1>
         </div>
 
         <main class="mb-5 main-lancamentos">
             <form id="editarForm" class="ps-3" action="/lancamentos/<%= lancamento.id %>/edit" method="POST">
+                <!-- Seção 1: Dados Básicos -->
                 <div class="row">
-                    <div class="col-md-6">
-                        <label class="mb-1 fw-bold fs-5" for="lancamento">Nome do Lançamento</label>
-                        <input type="text" class="form-control mb-2" id="lancamento" name="lancamento" 
-                            value="<%= lancamento.lancamento %>" required>
+                    <div class="col-md-3">
+                        <label class="mb-1 fw-bold fs-5" for="entrada_saida">Entrada/Saída</label>
+                        <select class="form-control mb-2" id="entrada_saida" name="entrada_saida" 
+                            <%= lancamento.total_parcelas !== null ? 'disabled' : '' %> required>
+                            <option value="" disabled>Selecione</option>
+                            <option value="Entrada" <%= lancamento.entrada_saida === 'Entrada' ? 'selected' : '' %>>Entrada</option>
+                            <option value="Saida" <%= lancamento.entrada_saida === 'Saida' ? 'selected' : '' %>>Saída</option>
+                        </select>
                     </div>
-                    <div class="col-md-2">
-                        <label class="mb-1 fw-bold fs-5" for="responsavel_nome">Responsável</label>
-                        <input type="text" class="form-control mb-2" id="responsavel_nome" name="responsavel_nome" 
-                            value="<%= lancamento.responsavel_nome %>" required>
+
+                    <div class="col-md-3">
+                        <label class="mb-1 fw-bold fs-5" for="data">Data da Compra</label>
+                        <input type="date" class="form-control mb-2" id="data" name="data" 
+                            value="<%= lancamento.data %>" required>
                     </div>
-                    <div class="col-md-2">
-                        <label class="mb-1 fw-bold fs-5" for="telefone_contato">Contato</label>
-                        <input type="tel" class="form-control mb-2" id="telefone_contato" name="telefone_contato" 
-                            value="<%= lancamento.telefone_contato %>" required>
+
+                    <div class="col-md-3">
+                        <label class="mb-1 fw-bold fs-5" for="tipo_de_lancamento">Tipo de Lançamento</label>
+                        <select class="form-control mb-2" id="tipo_de_lancamento" name="tipo_de_lancamento" 
+                            <%= lancamento.total_parcelas !== null ? 'disabled' : '' %> required>
+                            <option value="" disabled>Selecione</option>
+                            <option value="compra" <%= lancamento.tipo_de_lancamento === 'compra' ? 'selected' : '' %>>Compra</option>
+                            <option value="extra" <%= lancamento.tipo_de_lancamento === 'extra' ? 'selected' : '' %>>Extra</option>
+                            <option value="incremento_de_capital" <%= lancamento.tipo_de_lancamento === 'incremento_de_capital' ? 'selected' : '' %>>Incremento de Capital</option>
+                            <option value="pro-labore" <%= lancamento.tipo_de_lancamento === 'pro-labore' ? 'selected' : '' %>>Pró-Labore</option>
+                            <option value="receita_dos_pontos" <%= lancamento.tipo_de_lancamento === 'receita_dos_pontos' ? 'selected' : '' %>>Receita dos Pontos</option>
+                            <option value="gastos_recorrentes" <%= lancamento.tipo_de_lancamento === 'gastos_recorrentes' ? 'selected' : '' %>>Gastos Recorrentes</option>
+                            <option value="bonus" <%= lancamento.tipo_de_lancamento === 'bonus' ? 'selected' : '' %>>Bônus</option>
+                        </select>
                     </div>
-                    <div class="col-md-2">
-                        <label class="mb-1 fw-bold fs-5" for="status">Status</label>
-                        <select class="form-control" id="status" name="status" required>
-                            <option value="ativo" <%= lancamento.status === 'ativo' ? 'selected' : '' %>>Ativo</option>
-                            <option value="inativo" <%= lancamento.status === 'inativo' ? 'selected' : '' %>>Inativo</option>
+
+                    <div class="col-md-3">
+                        <label class="mb-1 fw-bold fs-5" for="forma_de_pagamento">Forma de Pagamento</label>
+                        <select class="form-control mb-2" id="forma_de_pagamento" name="forma_de_pagamento" required>
+                            <option value="" disabled>Selecione</option>
+                            <option value="boleto" <%= lancamento.forma_de_pagamento === 'boleto' ? 'selected' : '' %>>Boleto</option>
+                            <option value="credito" <%= lancamento.forma_de_pagamento === 'credito' ? 'selected' : '' %>>Crédito</option>
+                            <option value="pix" <%= lancamento.forma_de_pagamento === 'pix' ? 'selected' : '' %>>Pix</option>
+                            <option value="especie" <%= lancamento.forma_de_pagamento === 'especie' ? 'selected' : '' %>>Espécie</option>
                         </select>
                     </div>
                 </div>
 
+                <!-- Seção 2: Detalhes do Lançamento -->
                 <div class="row">
-                    <div class="col-md-5">
-                        <label class="mb-1 fw-bold fs-5" for="endereco">Endereço</label>
-                        <input type="text" class="form-control mb-2" id="endereco" name="endereco" 
-                            value="<%= lancamento.endereco %>" required>
-                    </div>
                     <div class="col-md-3">
-                        <label class="mb-1 fw-bold fs-5" for="bairro">Bairro</label>
-                        <input type="text" class="form-control mb-2" id="bairro" name="bairro" 
-                            value="<%= lancamento.bairro %>" required>
+                        <label class="mb-1 fw-bold fs-5" for="produto">Produto</label>
+                        <select class="form-control mb-2" id="produto" name="produto" required>
+                            <option value="" disabled>Selecione</option>
+                            <option value="bolinhas" <%= lancamento.produto === 'bolinhas' ? 'selected' : '' %>>Bolinhas</option>
+                            <option value="figurinhas" <%= lancamento.produto === 'figurinhas' ? 'selected' : '' %>>Figurinhas</option>
+                            <option value="pelucias" <%= lancamento.produto === 'pelucias' ? 'selected' : '' %>>Pelúcias</option>
+                        </select>
                     </div>
+
                     <div class="col-md-2">
-                        <label class="mb-1 fw-bold fs-5" for="chave">Chave</label>
-                        <input type="text" class="form-control mb-2" id="chave" name="chave" 
-                            value="<%= lancamento.chave %>">
+                        <% if (lancamento.total_parcelas === null) { %>
+                            <label class="mb-1 fw-bold fs-5" for="qtde_de_parcelas">Qtde. de Parcelas</label>
+                            <input type="number" class="form-control mb-2" id="qtde_de_parcelas" 
+                                name="qtde_de_parcelas" value="<%= lancamento.qtde_de_parcelas %>" min="1" required>
+                        <% } else { %>
+                            <label class="mb-1 fw-bold fs-5" for="parcela">Parcela</label>
+                            <input type="text" class="form-control mb-2" id="parcela" 
+                                value="<%= lancamento.parcela_atual %> de <%= lancamento.total_parcelas %>" disabled>
+                        <% } %>
                     </div>
+
                     <div class="col-md-2">
-                        <label class="mb-1 fw-bold fs-5" for="maquina">Máquina</label>
-                        <input type="text" class="form-control mb-2" id="maquina" name="maquina" 
-                            value="<%= lancamento.maquina %>">
+                        <label class="mb-1 fw-bold fs-5" for="valor">Valor (R$)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">R$</span>
+                            <input id="valor" type="number" class="form-control" name="valor" 
+                                step="0.01" value="<%= lancamento.valor %>" required placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="mb-1 fw-bold fs-5" for="vencimento">Vencimento</label>
+                        <input type="date" class="form-control mb-2" id="vencimento" name="vencimento" 
+                            value="<%= lancamento.vencimento %>">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="mb-1 fw-bold fs-5" for="usuario">Usuário</label>
+                        <input type="text" class="form-control mb-2" id="usuario" name="usuario" 
+                            value="<%= usuario ? usuario.username : '' %>" readonly required>
                     </div>
                 </div>
 
+                <!-- Seção 3: Descrição -->
                 <div class="row">
-                    <div class="col-md-2">
-                        <label class="mb-1 ms-4 fw-bold fs-5">Produto</label>
-                        <div class="form-check">
-                            <input class="form-check-input ms-1" type="checkbox" id="produto1" name="produto" 
-                                value="BOL" <%= lancamento.produto.includes('BOL') ? 'checked' : '' %>>
-                            <label class="form-check-label ms-2" for="produto1">BOL</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input ms-1" type="checkbox" id="produto2" name="produto" 
-                                value="FIG" <%= lancamento.produto.includes('FIG') ? 'checked' : '' %>>
-                            <label class="form-check-label ms-2" for="produto2">FIG</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input ms-1" type="checkbox" id="produto3" name="produto" 
-                                value="PEL" <%= lancamento.produto.includes('PEL') ? 'checked' : '' %>>
-                            <label class="form-check-label ms-2" for="produto3">PEL</label>
-                        </div>
-                    </div>
-                    <div class="col-md-10">
-                        <label class="mb-1 fw-bold fs-5" for="observacoes">Comentários</label>
-                        <textarea class="form-control mb-2" id="observacoes" name="observacoes" rows="3" 
-                            maxlength="255"><%= lancamento.observacoes %></textarea>
+                    <div class="col-md-12">
+                        <label class="mb-1 fw-bold fs-5" for="descricao">Descrição</label>
+                        <textarea class="form-control mb-2" id="descricao" name="descricao" rows="3" 
+                            maxlength="255" placeholder="Descreva o lançamento" required><%= lancamento.descricao.split(' | ')[0] %></textarea>
                         <div class="form-text text-end" id="charCounter">
-                            <%= lancamento.observacoes ? lancamento.observacoes.length : 0 %>/255 caracteres
+                            <%= lancamento.descricao ? lancamento.descricao.split(' | ')[0].length : 0 %>/255 caracteres
                         </div>
                     </div>
                 </div>
 
+                <!-- Botões de Ação -->
                 <div class="d-flex justify-content-center my-3">
                     <a href="/lancamentos/table">
                         <button type="button" class="btn btn-warning px-5 me-3 fs-5">Cancelar</button>
                     </a>
-                    <button type="submit" class="btn btn-secondary px-5 fs-5">Atualizar</button>
+                    <button type="submit" class="btn btn-success px-5 fs-5">Salvar Alterações</button>
                 </div>
             </form>
         </main>
 
-        <!-- Modal de Sucesso -->
-        <% if (success) { %>
-            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <!-- Sistema de Modals -->
+        <% if (info) { %>
+            <!-- Modal de Informação (Prioridade Máxima) -->
+            <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" 
+                aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <div class="modal-header bg-success bg-gradient text-white">
-                            <h5 class="modal-title d-flex align-items-center" id="successModalLabel">
-                                <i class="bi bi-check-circle-fill me-2"></i> Sucesso!
+                        <div class="modal-header bg-warning text-dark">
+                            <h5 class="modal-title d-flex align-items-center" id="infoModalLabel">
+                                <i class="bi bi-info-circle-fill me-2"></i> Informação
                             </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body text-center fs-5">
-                            <%= success %>
+                            <%= info %>
                         </div>
                         <div class="modal-footer justify-content-center">
-                            <a href="/lancamentos/table" class="btn btn-success btn-lg">OK</a>
+                            <button type="button" class="btn btn-warning btn-lg" data-bs-dismiss="modal">OK</button>
                         </div>
                     </div>
                 </div>
             </div>
         <% } %>
 
-        <!-- Modal de Erro -->
-        <% if (error) { %>
-            <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <% if (error && !info) { %>
+            <!-- Modal de Erro -->
+            <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" 
+                aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <div class="modal-header bg-danger bg-gradient text-white">
+                        <div class="modal-header bg-danger text-white">
                             <h5 class="modal-title d-flex align-items-center" id="errorModalLabel">
                                 <i class="bi bi-exclamation-triangle-fill me-2"></i> Erro!
                             </h5>
@@ -153,22 +197,23 @@
             </div>
         <% } %>
 
-        <!-- Modal de Informação (Neutro) -->
-        <% if (info) { %>
-            <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <% if (success && !info) { %>
+            <!-- Modal de Sucesso -->
+            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" 
+                aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <div class="modal-header bg-warning bg-gradient text-dark">
-                            <h5 class="modal-title d-flex align-items-center" id="infoModalLabel">
-                                <i class="bi bi-info-circle-fill me-2"></i> Informações
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title d-flex align-items-center" id="successModalLabel">
+                                <i class="bi bi-check-circle-fill me-2"></i> Sucesso!
                             </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body text-center fs-5">
-                            <%= info %>
+                            <%= success %>
                         </div>
                         <div class="modal-footer justify-content-center">
-                            <button type="button" class="btn btn-warning btn-lg" data-bs-dismiss="modal">OK</button>
+                            <a href="/lancamentos/table" class="btn btn-success btn-lg">OK</a>
                         </div>
                     </div>
                 </div>
@@ -180,91 +225,67 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <script>
+        // Controle de Formulário
         document.addEventListener('DOMContentLoaded', () => {
-            // Formatação do telefone
-            const telefoneInput = document.getElementById('telefone_contato');
-            telefoneInput.addEventListener('input', (e) => {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 11) value = value.slice(0, 11);
-                
-                let formatted = '';
-                if (value.length > 0) {
-                    formatted = '(' + value.slice(0, 2);
-                    if (value.length > 2) formatted += ') ' + value.slice(2, 7);
-                    if (value.length > 7) formatted += '-' + value.slice(7);
-                }
-                e.target.value = formatted;
-            });
-
-            // Validação do formulário
             const form = document.getElementById('editarForm');
+            const textarea = document.getElementById('descricao');
+            const charCounter = document.getElementById('charCounter');
+
+            // Validação de Campos
             form.addEventListener('submit', (e) => {
-                const telefone = telefoneInput.value.replace(/\D/g, '');
-                if (telefone.length !== 11) {
-                    e.preventDefault();
-                    alert('O telefone deve conter exatamente 11 dígitos (DDD + número).');
-                    telefoneInput.classList.add('is-invalid');
-                    return;
-                } else {
-                    telefoneInput.classList.remove('is-invalid');
-                }
-
-                const checkboxes = document.querySelectorAll('input[name="produto"]');
-                const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-                if (!isChecked) {
-                    e.preventDefault();
-                    alert('Por favor, marque pelo menos um produto.');
-                    return;
-                }
-
-                const requiredFields = document.querySelectorAll('[required]');
                 let isValid = true;
-                requiredFields.forEach(field => {
+                
+                // Verificar campos obrigatórios
+                document.querySelectorAll('[required]').forEach(field => {
                     if (!field.value.trim()) {
-                        isValid = false;
                         field.classList.add('is-invalid');
+                        isValid = false;
                     } else {
                         field.classList.remove('is-invalid');
                     }
                 });
 
+                // Validação especial para valor
+                const valorInput = document.getElementById('valor');
+                if (valorInput.value <= 0) {
+                    valorInput.classList.add('is-invalid');
+                    isValid = false;
+                }
+
                 if (!isValid) {
                     e.preventDefault();
-                    alert('Preencha todos os campos obrigatórios!');
-                    return;
+                    alert('Corrija os campos destacados em vermelho!');
                 }
             });
 
-            // Contador de caracteres
-            const textarea = document.getElementById('observacoes');
-            const charCounter = document.getElementById('charCounter');
+            // Contador de Caracteres
             textarea.addEventListener('input', () => {
                 charCounter.textContent = `${textarea.value.length}/255 caracteres`;
             });
 
-            // Controle dos modals
-            const successModalElement = document.getElementById('successModal');
-            const errorModalElement = document.getElementById('errorModal');
-            const infoModalElement = document.getElementById('infoModal');
+            // Controle Hierárquico de Modals
+            const modalsPriority = [
+                document.getElementById('infoModal'),
+                document.getElementById('errorModal'),
+                document.getElementById('successModal')
+            ];
 
-            if (successModalElement) {
-                const successModal = new bootstrap.Modal(successModalElement, { backdrop: 'static', keyboard: false });
-                successModal.show();
-                setTimeout(() => {
-                    successModal.hide();
-                    window.location.href = '/lancamentos/table';
-                }, 3000);
-            }
+            modalsPriority.forEach(modal => {
+                if (modal) {
+                    const instance = new bootstrap.Modal(modal, {
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    instance.show();
 
-            if (errorModalElement) {
-                const errorModal = new bootstrap.Modal(errorModalElement, { backdrop: 'static', keyboard: false });
-                errorModal.show();
-            }
-
-            if (infoModalElement) {
-                const infoModal = new bootstrap.Modal(infoModalElement, { backdrop: 'static', keyboard: false });
-                infoModal.show();
-            }
+                    // Redirecionamento automático apenas para sucesso
+                    if (modal.id === 'successModal') {
+                        setTimeout(() => {
+                            window.location.href = '/lancamentos/table';
+                        }, 3000);
+                    }
+                }
+            });
         });
     </script>
 

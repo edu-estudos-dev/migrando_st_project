@@ -114,7 +114,6 @@
             width: 4% !important;
         }
 
-
         /* Descrição */
         .table-custom th:nth-child(9),
         .table-custom td:nth-child(9) {
@@ -132,7 +131,6 @@
         .table-custom td:nth-child(11) {
             width: 10% !important;
         }
-
 
         .table-custom tbody tr:hover {
             background-color: #f8f9fa !important;
@@ -181,20 +179,6 @@
 
     <!-- Mensagens de Sucesso/Falha -->
     <div id="alert-container"></div>
-
-    <% if (typeof success !=='undefined' ) { %>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <%= success %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <% } %>
-
-    <% if (typeof error !=='undefined' ) { %>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <%= error %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <% } %>
 
     <main class="main-lancamentos">
         <div class="row header-bar mb-0">
@@ -253,10 +237,10 @@
                             </td>
                             <td class="col-responsavel text-center" data-label="Descrição">
                                 <%= lancamentos.descricao %>
+                            </td>
                             <td class="col-responsavel text-center" data-label="Vencimento">
                                 <%= lancamentos.vencimento %>
                             </td>
-                        
                             <td class="col-acoes">
                                 <div class="action-buttons">
                                     <a type="button"
@@ -292,7 +276,7 @@
                         data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Lancamentos excluído com sucesso!
+                    Lançamento excluído com sucesso!
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" id="okDeleteButton">OK</button>
@@ -312,7 +296,7 @@
                         data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" id="errorDeleteMessage">
-                    Erro ao excluir o lancamentos
+                    Erro ao excluir o lançamento
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger"
@@ -334,181 +318,180 @@
         crossorigin="anonymous">
     </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Função para formatar valor para moeda brasileira
-        function formatCurrency(value) {
-            const numValue = typeof value === 'string' ? parseFloat(value.replace(',', '.')) : value;
-            return numValue.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Função para formatar valor para moeda brasileira
+            function formatCurrency(value) {
+                const numValue = typeof value === 'string' ? parseFloat(value.replace(',', '.')) : value;
+                return numValue.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                });
+            }
+
+            // Função para formatar data do formato americano (YYYY-MM-DD) para brasileiro (DD/MM/YYYY)
+            function formatDate(dateStr) {
+                if (!dateStr) return '';
+                const [year, month, day] = dateStr.split('-');
+                return `${day}/${month}/${year}`;
+            }
+
+            // Função para formatar o tipo de lançamento
+            function formatTipoLancamento(tipo) {
+                const tiposFormatados = {
+                    'compra': 'Compra',
+                    'extra': 'Extra',
+                    'incremento_de_capital': 'Incremento de Capital',
+                    'pro-labore': 'Pró-Labore',
+                    'receita_dos_pontos': 'Receita dos Pontos',
+                    'gastos_recorrentes': 'Gastos Recorrentes',
+                    'bonus': 'Bônus'
+                };
+                return tiposFormatados[tipo] || tipo;
+            }
+
+            // Função para formatar telefone (se aplicável)
+            function formatPhoneNumber(phone) {
+                const cleaned = ('' + phone).replace(/\D/g, '');
+                if (cleaned.length === 11) {
+                    return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
+                }
+                return phone;
+            }
+
+            // Formatar valores na coluna "Valor"
+            const valueCells = document.querySelectorAll('td[data-label="Vaçor"]');
+            valueCells.forEach(cell => {
+                const rawValue = cell.textContent.trim();
+                cell.textContent = formatCurrency(rawValue);
             });
-        }
 
-        // Função para formatar data do formato americano (YYYY-MM-DD) para brasileiro (DD/MM/YYYY)
-        function formatDate(dateStr) {
-            if (!dateStr) return '';
-            const [year, month, day] = dateStr.split('-');
-            return `${day}/${month}/${year}`;
-        }
+            // Formatar datas na coluna "Data"
+            const dateCells = document.querySelectorAll('td[data-label="Data"]');
+            dateCells.forEach(cell => {
+                const rawDate = cell.textContent.trim();
+                cell.textContent = formatDate(rawDate);
+            });
 
-        // Função para formatar o tipo de lançamento
-        function formatTipoLancamento(tipo) {
-            const tiposFormatados = {
-                'compra': 'Compra',
-                'extra': 'Extra',
-                'incremento_de_capital': 'Incremento de Capital',
-                'pro-labore': 'Pró-Labore',
-                'receita_dos_pontos': 'Receita dos Pontos',
-                'gastos_recorrentes': 'Gastos Recorrentes',
-                'bonus': 'Bônus'
-            };
-            return tiposFormatados[tipo] || tipo;
-        }
+            // Formatar datas na coluna "Vencimento"
+            const dueDateCells = document.querySelectorAll('td[data-label="Vencimento"]');
+            dueDateCells.forEach(cell => {
+                const rawDueDate = cell.textContent.trim();
+                cell.textContent = formatDate(rawDueDate);
+            });
 
-        // Função para formatar telefone (se aplicável)
-        function formatPhoneNumber(phone) {
-            const cleaned = ('' + phone).replace(/\D/g, '');
-            if (cleaned.length === 11) {
-                return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`;
-            }
-            return phone;
-        }
+            // Formatar tipo de lançamento na coluna "Tipo de Lançamento"
+            const tipoCells = document.querySelectorAll('td[data-label="Tipo-de-lançamento"]');
+            tipoCells.forEach(cell => {
+                const rawTipo = cell.textContent.trim();
+                cell.textContent = formatTipoLancamento(rawTipo);
+            });
 
-        // Formatar valores na coluna "Valor"
-        const valueCells = document.querySelectorAll('td[data-label="Vaçor"]');
-        valueCells.forEach(cell => {
-            const rawValue = cell.textContent.trim();
-            cell.textContent = formatCurrency(rawValue);
-        });
+            // Formatar telefones na coluna "Contato" (se aplicável)
+            const contactCells = document.querySelectorAll('.col-contato');
+            contactCells.forEach(cell => {
+                const rawPhone = cell.getAttribute('data-telefone');
+                if (rawPhone) {
+                    cell.textContent = formatPhoneNumber(rawPhone);
+                }
+            });
 
-        // Formatar datas na coluna "Data"
-        const dateCells = document.querySelectorAll('td[data-label="Data"]');
-        dateCells.forEach(cell => {
-            const rawDate = cell.textContent.trim();
-            cell.textContent = formatDate(rawDate);
-        });
+            // Configurar modais e botões
+            const viewButtons = document.querySelectorAll('.view-btn');
+            const editButtons = document.querySelectorAll('.edit-btn');
+            const deleteButtons = document.querySelectorAll('.delete-btn');
 
-        // Formatar datas na coluna "Vencimento"
-        const dueDateCells = document.querySelectorAll('td[data-label="Vencimento"]');
-        dueDateCells.forEach(cell => {
-            const rawDueDate = cell.textContent.trim();
-            cell.textContent = formatDate(rawDueDate);
-        });
+            const successDeleteModal = new bootstrap.Modal(document.getElementById('successDeleteModal'));
+            const errorDeleteModal = new bootstrap.Modal(document.getElementById('errorDeleteModal'));
+            const errorDeleteMessage = document.getElementById('errorDeleteMessage');
 
-        // Formatar tipo de lançamento na coluna "Tipo de Lançamento"
-        const tipoCells = document.querySelectorAll('td[data-label="Tipo-de-lançamento"]');
-        tipoCells.forEach(cell => {
-            const rawTipo = cell.textContent.trim();
-            cell.textContent = formatTipoLancamento(rawTipo);
-        });
+            // Configurar botão OK do modal de sucesso
+            document.getElementById('okDeleteButton').addEventListener('click', function () {
+                successDeleteModal.hide();
+                window.location.href = '/lancamentos/table';
+            });
 
-        // Formatar telefones na coluna "Contato" (se aplicável)
-        const contactCells = document.querySelectorAll('.col-contato');
-        contactCells.forEach(cell => {
-            const rawPhone = cell.getAttribute('data-telefone');
-            if (rawPhone) {
-                cell.textContent = formatPhoneNumber(rawPhone);
-            }
-        });
-
-        // Configurar modais e botões
-        const viewButtons = document.querySelectorAll('.view-btn');
-        const editButtons = document.querySelectorAll('.edit-btn');
-        const deleteButtons = document.querySelectorAll('.delete-btn');
-
-        const successDeleteModal = new bootstrap.Modal(document.getElementById('successDeleteModal'));
-        const errorDeleteModal = new bootstrap.Modal(document.getElementById('errorDeleteModal'));
-        const errorDeleteMessage = document.getElementById('errorDeleteMessage');
-
-        // Configurar botão OK do modal de sucesso
-        document.getElementById('okDeleteButton').addEventListener('click', function () {
-            successDeleteModal.hide();
-            window.location.href = '/lancamentos/table';
-        });
-
-        // Função para lidar com a exclusão
-        function handleDelete(idLancamentos) {
-            if (confirm('Tem certeza que deseja EXCLUIR este Lancamentos?')) {
-                console.log('Confirmação aceita para ID:', idLancamentos);
-                fetch(`/lancamentos/${idLancamentos}`, {
-                    method: 'DELETE',
-                    credentials: 'include',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                    .then(response => {
-                        console.log('Status da resposta:', response.status);
-                        console.log('Response OK:', response.ok);
-                        console.log('Headers da resposta:', response.headers.get('Content-Type'));
-                        console.log('Response URL:', response.url);
-                        if (response.ok) {
-                            console.log('Exclusão bem-sucedida, exibindo modal de sucesso');
-                            successDeleteModal.show();
-                            setTimeout(() => {
-                                successDeleteModal.hide();
-                                window.location.href = '/lancamentos/table';
-                            }, 3000);
-                        } else if (response.status === 401) {
-                            console.log('Usuário não autenticado, redirecionando para login');
-                            errorDeleteMessage.textContent = 'Sessão expirada. Por favor, faça login novamente.';
-                            errorDeleteModal.show();
-                            setTimeout(() => {
-                                window.location.href = '/users/login';
-                            }, 3000);
-                        } else {
-                            console.log('Exclusão falhou, exibindo modal de erro');
-                            response.text().then(text => {
-                                console.log('Corpo da resposta:', text);
-                                errorDeleteMessage.textContent = 'Erro ao excluir o lancamentos: ' + text;
-                                errorDeleteModal.show();
-                            });
+            // Função para lidar com a exclusão
+            function handleDelete(idLancamentos) {
+                if (confirm('Tem certeza que deseja EXCLUIR este Lançamento?')) {
+                    console.log('Confirmação aceita para ID:', idLancamentos);
+                    fetch(`/lancamentos/${idLancamentos}`, {
+                        method: 'DELETE',
+                        credentials: 'include',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
-                    .catch(error => {
-                        console.error('Erro no fetch:', error);
-                        errorDeleteMessage.textContent = `Erro ao processar a solicitação: ${error.message}`;
-                        errorDeleteModal.show();
-                    });
-            } else {
-                console.log('Confirmação cancelada para ID:', idLancamentos);
-                return;
+                        .then(response => {
+                            console.log('Status da resposta:', response.status);
+                            console.log('Response OK:', response.ok);
+                            console.log('Headers da resposta:', response.headers.get('Content-Type'));
+                            console.log('Response URL:', response.url);
+                            if (response.ok) {
+                                console.log('Exclusão bem-sucedida, exibindo modal de sucesso');
+                                successDeleteModal.show();
+                                setTimeout(() => {
+                                    successDeleteModal.hide();
+                                    window.location.href = '/lancamentos/table';
+                                }, 3000);
+                            } else if (response.status === 401) {
+                                console.log('Usuário não autenticado, redirecionando para login');
+                                errorDeleteMessage.textContent = 'Sessão expirada. Por favor, faça login novamente.';
+                                errorDeleteModal.show();
+                                setTimeout(() => {
+                                    window.location.href = '/users/login';
+                                }, 3000);
+                            } else {
+                                console.log('Exclusão falhou, exibindo modal de erro');
+                                response.text().then(text => {
+                                    console.log('Corpo da resposta:', text);
+                                    errorDeleteMessage.textContent = 'Erro ao excluir o lançamento: ' + text;
+                                    errorDeleteModal.show();
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro no fetch:', error);
+                            errorDeleteMessage.textContent = `Erro ao processar a solicitação: ${error.message}`;
+                            errorDeleteModal.show();
+                        });
+                } else {
+                    console.log('Confirmação cancelada para ID:', idLancamentos);
+                    return;
+                }
             }
-        }
 
-        // Remover quaisquer listeners existentes para evitar múltiplos cliques
-        deleteButtons.forEach(button => {
-            const newButton = button.cloneNode(true);
-            button.parentNode.replaceChild(newButton, button);
-        });
+            // Remover quaisquer listeners existentes para evitar múltiplos cliques
+            deleteButtons.forEach(button => {
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+            });
 
-        // Adicionar listeners para os botões
-        document.querySelectorAll('.view-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const idLancamentos = this.getAttribute('data-id');
-                window.location.href = `/lancamentos/${idLancamentos}/view`;
+            // Adicionar listeners para os botões
+            document.querySelectorAll('.view-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const idLancamentos = this.getAttribute('data-id');
+                    window.location.href = `/lancamentos/${idLancamentos}/view`;
+                });
+            });
+
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const idLancamentos = this.getAttribute('data-id');
+                    window.location.href = `/lancamentos/${idLancamentos}/edit`;
+                });
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const idLancamentos = this.getAttribute('data-id');
+                    handleDelete(idLancamentos);
+                }, { once: true }); // Garante que o evento seja disparado apenas uma vez por clique
             });
         });
+    </script>
 
-        document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const idLancamentos = this.getAttribute('data-id');
-                window.location.href = `/lancamentos/${idLancamentos}/edit`;
-            });
-        });
-
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function (e) {
-                e.preventDefault();
-                const idLancamentos = this.getAttribute('data-id');
-                handleDelete(idLancamentos);
-            }, { once: true }); // Garante que o evento seja disparado apenas uma vez por clique
-        });
-    });
-</script>
-
-<%- include('../partials/footer') %>
+    <%- include('../partials/footer') %>
 </body>
-
 </html>

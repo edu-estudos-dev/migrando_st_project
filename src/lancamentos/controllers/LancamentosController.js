@@ -104,7 +104,9 @@ class LancamentosController {
 
 						// Ajustar a descrição para incluir o número da parcela
 						const descricaoParcela = lancamentoBase.descricao
-							? `${lancamentoBase.descricao} (Parcela ${i + 1} de ${qtdeDeParcelas})`
+							? `${lancamentoBase.descricao} (Parcela ${
+									i + 1
+							  } de ${qtdeDeParcelas})`
 							: ` ${i + 1} de ${qtdeDeParcelas}`;
 
 						const lancamentoParcela = {
@@ -183,7 +185,7 @@ class LancamentosController {
 			const error = req.query.error || null;
 			const info = null; // Inicializa info como null para evitar o erro
 
-			res.status(200).render('lancamentos/editarLancamento', {
+			res.status(200).render('lancamentos/editarLancamentos', {
 				title: 'Editar Lancamento',
 				lancamento,
 				success,
@@ -199,119 +201,326 @@ class LancamentosController {
 
 	// Método para atualizar lancamento
 	async editLancamento(req, res) {
+		console.log('=== INÍCIO DA REQUISIÇÃO ===');
 		const usuario = req.session.user;
 		const { id } = req.params;
+		const success = req.query.success || null;
+		const error = req.query.error || null;
+		const info = req.query.info || null;
 
+		console.log('Tipo de requisição:', req.method);
+		console.log('ID do lançamento:', id);
+		console.log('Usuário:', usuario.id);
+
+		if (req.method === 'GET') {
+			console.log('Processando método GET...');
+			try {
+				const lancamento = await models.Lancamentos.findByPk(id);
+				if (!lancamento) {
+					console.error('Lançamento não encontrado no banco de dados');
+					return res.status(404).render('404', {
+						title: 'Lançamento Não Encontrado',
+						usuario
+					});
+				}
+
+				console.log('Formatação dos dados do lançamento...');
+				const formattedLancamento = {
+					id: lancamento.id,
+					entrada_saida: lancamento.entrada_saida,
+					data: lancamento.data
+						? new Date(lancamento.data).toISOString().split('T')[0]
+						: '',
+					tipo_de_lancamento: lancamento.tipo_de_lancamento,
+					produto: lancamento.produto,
+					forma_de_pagamento: lancamento.forma_de_pagamento,
+					valor: lancamento.valor
+						? Number(lancamento.valor).toFixed(2)
+						: '0.00',
+					descricao: lancamento.descricao,
+					vencimento: lancamento.vencimento
+						? new Date(lancamento.vencimento).toISOString().split('T')[0]
+						: '',
+					qtde_de_parcelas: lancamento.qtde_de_parcelas,
+					total_parcelas: lancamento.total_parcelas,
+					parcela_atual: lancamento.parcela_atual
+				};
+
+				console.log('Renderizando página de edição...');
+				return res.render('lancamentos/editarLancamentos', {
+					title: 'Editar Lançamento',
+					lancamento: formattedLancamento,
+					success,
+					error,
+					info,
+					usuario
+				});
+			} catch (error) {
+				console.error('Erro no método GET:', error);
+				return res.status(500).render('lancamentos/editarLancamentos', {
+					title: 'Erro',
+					lancamento: null,
+					success: null,
+					error: 'Erro interno ao carregar lançamento',
+					info: null,
+					usuario
+				});
+			}
+		}
+
+		// Método POST
+		console.log('Processando método POST...');
 		try {
-			const requiredFields = [
-				'lancamento',
-				'status',
-				'endereco',
-				'bairro',
-				'responsavel_nome',
-				'telefone_contato'
-			];
+			console.log('Buscando lançamento no banco de dados...');
+			const currentLancamento = await models.Lancamentos.findByPk(id);
+			if (!currentLancamento) {
+				console.error('Lançamento não encontrado para atualização');
+				throw new Error('Lançamento não encontrado');
+			}
+
+			console.log('Validação de campos obrigatórios...');
+			const requiredFields = [];
+			const isParcelado = currentLancamento.total_parcelas !== null;
+
+			requiredFields.push('data', 'produto', 'forma_de_pagamento', 'valor');
+			if (!isParcelado) {
+				requiredFields.push(
+					'entrada_saida',
+					'tipo_de_lancamento',
+					'qtde_de_parcelas'
+				);
+			}
 
 			for (const field of requiredFields) {
-				if (!req.body[field]) {
-					throw new Error(`Preencha o campo obrigatório: ${field}`);
+				if (!req.body[field] || req.body[field].trim() === '') {
+					console.error(`Campo obrigatório ausente: ${field}`);
+					throw new Error(`Preencha o campo: ${field.replace(/_/g, ' ')}`);
 				}
 			}
 
-			const produtos = req.body.produto;
-			if (!produtos || (Array.isArray(produtos) && produtos.length === 0)) {
-				throw new Error('Selecione pelo menos um produto');
-			}
-
-			const currentLancamento = await models.Lancamentos.findByPk(id);
-			if (!currentLancamento) {
-				throw new Error('Lancamento não encontrado');
-			}
-
+			console.log('Preparando dados para atualização...');
 			const lancamentoData = {
-				lancamento: req.body.lancamento
-					? req.body.lancamento.trim().toUpperCase()
-					: '',
-				status: req.body.status ? req.body.status.trim().toLowerCase() : '',
-				produto: Array.isArray(produtos)
-					? produtos.map(p => p.trim().toUpperCase()).join(', ')
-					: produtos.trim().toUpperCase(),
-				chave:
-					req.body.chave && req.body.chave.trim() !== ''
-						? req.body.chave.trim()
-						: '-',
-				maquina:
-					req.body.maquina && req.body.maquina.trim() !== ''
-						? req.body.maquina.trim()
-						: '-',
-				endereco: req.body.endereco
-					? req.body.endereco.trim().toUpperCase()
-					: '',
-				bairro: req.body.bairro ? req.body.bairro.trim().toUpperCase() : '',
-				responsavel_nome: req.body.responsavel_nome
-					? req.body.responsavel_nome.trim().toUpperCase()
-					: '',
-				telefone_contato: req.body.telefone_contato
-					? req.body.telefone_contato.replace(/\D/g, '')
-					: '',
-				observacoes: req.body.observacoes
-					? req.body.observacoes.trim().toUpperCase()
-					: ''
+				entrada_saida: req.body.entrada_saida
+					? req.body.entrada_saida.trim()
+					: currentLancamento.entrada_saida,
+				data: req.body.data || currentLancamento.data,
+				tipo_de_lancamento: req.body.tipo_de_lancamento
+					? req.body.tipo_de_lancamento.trim().toLowerCase()
+					: currentLancamento.tipo_de_lancamento,
+				produto: req.body.produto
+					? req.body.produto.trim().toLowerCase()
+					: currentLancamento.produto,
+				forma_de_pagamento: req.body.forma_de_pagamento
+					? req.body.forma_de_pagamento.trim().toLowerCase()
+					: currentLancamento.forma_de_pagamento,
+				valor: req.body.valor
+					? parseFloat(req.body.valor)
+					: currentLancamento.valor,
+				descricao: req.body.descricao
+					? req.body.descricao.trim()
+					: currentLancamento.descricao,
+				vencimento: req.body.vencimento || currentLancamento.vencimento
 			};
 
-			const hasChanges = Object.keys(lancamentoData).some(key => {
-				let currentValue = currentLancamento[key] || '';
-				let newValue = lancamentoData[key] || '';
-				return currentValue.toString() !== newValue.toString();
+			console.log('Tratamento de lançamentos parcelados...');
+			if (isParcelado) {
+				lancamentoData.descricao = `${lancamentoData.descricao} | ${currentLancamento.parcela_atual} de ${currentLancamento.total_parcelas}`;
+			} else {
+				lancamentoData.qtde_de_parcelas = req.body.qtde_de_parcelas
+					? parseInt(req.body.qtde_de_parcelas)
+					: currentLancamento.qtde_de_parcelas;
+			}
+
+			console.log('Verificando alterações...');
+			let hasChanges = false;
+			const changesLog = [];
+
+			Object.keys(lancamentoData).forEach(key => {
+				let currentValue = currentLancamento[key];
+				let newValue = lancamentoData[key];
+
+				// Pular campos bloqueados em lançamentos parcelados
+				if (
+					isParcelado &&
+					(key === 'entrada_saida' || key === 'tipo_de_lancamento')
+				) {
+					return;
+				}
+
+				// Normalização de valores
+				if (key === 'data' || key === 'vencimento') {
+					currentValue = currentValue
+						? new Date(currentValue).toISOString().split('T')[0]
+						: null;
+					newValue = newValue
+						? new Date(newValue).toISOString().split('T')[0]
+						: null;
+				}
+
+				if (key === 'valor') {
+					currentValue = currentValue
+						? Number(currentValue).toFixed(2)
+						: '0.00';
+					newValue = newValue ? Number(newValue).toFixed(2) : '0.00';
+				}
+
+				if (key === 'descricao' && isParcelado) {
+					currentValue = currentValue.split(' | ')[0];
+					newValue = newValue.split(' | ')[0];
+				}
+
+				// Comparar apenas se o campo foi enviado no formulário
+				if (
+					req.body[key] !== undefined &&
+					String(currentValue) !== String(newValue)
+				) {
+					hasChanges = true;
+					changesLog.push({
+						campo: key,
+						original: currentValue,
+						novo: newValue
+					});
+				}
 			});
 
+			console.log('Registro de alterações:', changesLog);
+			console.log('Alterações detectadas:', hasChanges);
+
 			if (!hasChanges) {
-				return res.render('lancamentos/editarLancamento', {
-					title: 'Editar Lancamento',
-					lancamento: currentLancamento,
-					info: 'Nenhuma alteração foi feita.',
+				console.log('Nenhuma alteração relevante encontrada');
+				const formattedLancamento = {
+					...currentLancamento.dataValues,
+					data: currentLancamento.data
+						? new Date(currentLancamento.data).toISOString().split('T')[0]
+						: '',
+					vencimento: currentLancamento.vencimento
+						? new Date(currentLancamento.vencimento).toISOString().split('T')[0]
+						: '',
+					valor: currentLancamento.valor
+						? Number(currentLancamento.valor).toFixed(2)
+						: '0.00'
+				};
+
+				return res.render('lancamentos/editarLancamentos', {
+					title: 'Editar Lançamento',
+					lancamento: formattedLancamento,
 					success: null,
 					error: null,
+					info: 'Nenhuma alteração foi feita.',
 					usuario
 				});
 			}
 
+			console.log('Validando alterações em lançamentos parcelados...');
+			if (isParcelado) {
+				const camposBloqueados = ['entrada_saida', 'tipo_de_lancamento'];
+				const alteracoesInvalidas = camposBloqueados.some(campo => {
+					return (
+						String(currentLancamento[campo]) !== String(lancamentoData[campo])
+					);
+				});
+
+				if (alteracoesInvalidas) {
+					console.error(
+						'Tentativa de alterar campos bloqueados em lançamento parcelado'
+					);
+					const formattedLancamento = {
+						...currentLancamento.dataValues,
+						data: currentLancamento.data
+							? new Date(currentLancamento.data).toISOString().split('T')[0]
+							: '',
+						vencimento: currentLancamento.vencimento
+							? new Date(currentLancamento.vencimento)
+									.toISOString()
+									.split('T')[0]
+							: '',
+						valor: Number(currentLancamento.valor).toFixed(2)
+					};
+
+					return res.render('lancamentos/editarLancamentos', {
+						title: 'Editar Lançamento',
+						lancamento: formattedLancamento,
+						success: null,
+						error:
+							'Não é possível alterar campos chave em lançamentos parcelados',
+						info: null,
+						usuario
+					});
+				}
+			}
+
+			// Atualizar ultima_edicao apenas se houver mudanças
+			lancamentoData.ultima_edicao = new Date();
+			console.log('Atualizando registro no banco de dados...');
 			const [affectedRows] = await models.Lancamentos.update(lancamentoData, {
 				where: { id }
 			});
 
 			if (affectedRows === 0) {
-				return res.render('lancamentos/editarLancamento', {
-					title: 'Editar Lancamento',
-					lancamento: currentLancamento,
-					info: 'Nenhuma alteração foi feita.',
+				console.error('Nenhum registro afetado na atualização');
+				const formattedLancamento = {
+					...currentLancamento.dataValues,
+					data: currentLancamento.data
+						? new Date(currentLancamento.data).toISOString().split('T')[0]
+						: '',
+					vencimento: currentLancamento.vencimento
+						? new Date(currentLancamento.vencimento).toISOString().split('T')[0]
+						: '',
+					valor: Number(currentLancamento.valor).toFixed(2)
+				};
+
+				return res.render('lancamentos/editarLancamentos', {
+					title: 'Editar Lançamento',
+					lancamento: formattedLancamento,
 					success: null,
-					error: null,
+					error: 'Nenhum registro foi atualizado',
+					info: null,
 					usuario
 				});
 			}
 
-			return res.render('lancamentos/editarLancamento', {
-				title: 'Editar Lancamento',
-				lancamento: lancamentoData,
-				success: 'Lancamento atualizado com sucesso!',
-				info: null,
+			console.log('Buscando dados atualizados...');
+			const updatedLancamento = await models.Lancamentos.findByPk(id);
+			const formattedLancamento = {
+				...updatedLancamento.dataValues,
+				data: updatedLancamento.data
+					? new Date(updatedLancamento.data).toISOString().split('T')[0]
+					: '',
+				vencimento: updatedLancamento.vencimento
+					? new Date(updatedLancamento.vencimento).toISOString().split('T')[0]
+					: '',
+				valor: Number(updatedLancamento.valor).toFixed(2)
+			};
+
+			console.log('Atualização concluída com sucesso');
+			return res.render('lancamentos/editarLancamentos', {
+				title: 'Editar Lançamento',
+				lancamento: formattedLancamento,
+				success: 'Lançamento atualizado com sucesso!',
 				error: null,
+				info: null,
 				usuario
 			});
 		} catch (error) {
-			console.error('Erro na atualização:', error);
-			let errorMessage = error.message;
-			if (error.name === 'SequelizeUniqueConstraintError') {
-				errorMessage = 'Já existe um registro com esses dados';
-			}
+			console.error('Erro durante a atualização:', error);
+			const currentLancamento = await models.Lancamentos.findByPk(id);
+			const formattedLancamento = {
+				...currentLancamento.dataValues,
+				data: currentLancamento.data
+					? new Date(currentLancamento.data).toISOString().split('T')[0]
+					: '',
+				vencimento: currentLancamento.vencimento
+					? new Date(currentLancamento.vencimento).toISOString().split('T')[0]
+					: '',
+				valor: Number(currentLancamento.valor).toFixed(2)
+			};
 
-			return res.render('lancamentos/editarLancamento', {
-				title: 'Editar Lancamento',
-				lancamento: req.body,
+			return res.render('lancamentos/editarLancamentos', {
+				title: 'Editar Lançamento',
+				lancamento: formattedLancamento,
 				success: null,
+				error: error.message,
 				info: null,
-				error: errorMessage,
 				usuario
 			});
 		}
