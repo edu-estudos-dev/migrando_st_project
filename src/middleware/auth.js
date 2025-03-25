@@ -1,12 +1,15 @@
-// src/middleware/auth.js - Versão básica e funcional
 const isAuthenticated = (req, res, next) => {
-   // Verifica se o usuário está autenticado na sessão
+   console.log('Verificando sessão:', req.session);
    if (req.session && req.session.user) {
-       // Se autenticado, continua para a próxima função
+       console.log('Usuário na sessão:', req.session.user);
        return next();
    } else {
-       // Se não autenticado, redireciona para login
-       console.log('Usuário não autenticado. Redirecionando para login.');
+       console.log('Usuário não autenticado.');
+       if (req.xhr || req.headers['x-requested-with'] === 'XMLHttpRequest') {
+           console.log('Requisição AJAX detectada. Retornando status 401.');
+           return res.status(401).json({ message: 'Usuário não autenticado' });
+       }
+       console.log('Redirecionando para login.');
        return res.redirect('/users/login');
    }
 };

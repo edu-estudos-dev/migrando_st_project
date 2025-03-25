@@ -372,17 +372,19 @@ class LancamentosController {
 		}
 	}
 
+	// Método para excluir lançamento
 	async excluirLancamento(req, res) {
 		const id = req.params.id;
 		try {
 			const lancamento = await models.Lancamentos.findByPk(id);
-
 			if (!lancamento) {
+				console.log(`Lançamento com ID ${id} não encontrado`);
 				return res.status(404).render('404', { title: 'Lancamento Not Found' });
 			}
-
 			await models.Lancamentos.destroy({ where: { id } });
-			console.log(`Lancamento com ID ${id} excluído com sucesso.`); // Depuração
+			console.log(
+				`Lancamento com ID ${id} excluído com sucesso. Retornando status 204.`
+			);
 			return res.status(204).end();
 		} catch (error) {
 			console.error('Erro na exclusão:', error);

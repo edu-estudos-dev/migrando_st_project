@@ -9,7 +9,7 @@
         }
 
 </style>
-<%- include('../partials/head', { title: 'Editar Estabelecimento' }) %>
+<%- include('../partials/head', { title: 'Editar Lançamento' }) %>
 
 <body class="bg-light">
     <%- include('../partials/header') %>
@@ -18,32 +18,32 @@
 
     <div class="container w-75">
         <div class="cabecalho">
-            <h1 class="mb-0">Editar Estabelecimento</h1>
+            <h1 class="mb-0">Editar Lancamento</h1>
         </div>
 
-        <main class="mb-5 main-estabelecimentos">
-            <form id="editarForm" class="ps-3" action="/estabelecimentos/<%= estabelecimento.id %>/edit" method="POST">
+        <main class="mb-5 main-lancamentos">
+            <form id="editarForm" class="ps-3" action="/lancamentos/<%= lancamento.id %>/edit" method="POST">
                 <div class="row">
                     <div class="col-md-6">
-                        <label class="mb-1 fw-bold fs-5" for="estabelecimento">Nome do Estabelecimento</label>
-                        <input type="text" class="form-control mb-2" id="estabelecimento" name="estabelecimento" 
-                            value="<%= estabelecimento.estabelecimento %>" required>
+                        <label class="mb-1 fw-bold fs-5" for="lancamento">Nome do Lançamento</label>
+                        <input type="text" class="form-control mb-2" id="lancamento" name="lancamento" 
+                            value="<%= lancamento.lancamento %>" required>
                     </div>
                     <div class="col-md-2">
                         <label class="mb-1 fw-bold fs-5" for="responsavel_nome">Responsável</label>
                         <input type="text" class="form-control mb-2" id="responsavel_nome" name="responsavel_nome" 
-                            value="<%= estabelecimento.responsavel_nome %>" required>
+                            value="<%= lancamento.responsavel_nome %>" required>
                     </div>
                     <div class="col-md-2">
                         <label class="mb-1 fw-bold fs-5" for="telefone_contato">Contato</label>
                         <input type="tel" class="form-control mb-2" id="telefone_contato" name="telefone_contato" 
-                            value="<%= estabelecimento.telefone_contato %>" required>
+                            value="<%= lancamento.telefone_contato %>" required>
                     </div>
                     <div class="col-md-2">
                         <label class="mb-1 fw-bold fs-5" for="status">Status</label>
                         <select class="form-control" id="status" name="status" required>
-                            <option value="ativo" <%= estabelecimento.status === 'ativo' ? 'selected' : '' %>>Ativo</option>
-                            <option value="inativo" <%= estabelecimento.status === 'inativo' ? 'selected' : '' %>>Inativo</option>
+                            <option value="ativo" <%= lancamento.status === 'ativo' ? 'selected' : '' %>>Ativo</option>
+                            <option value="inativo" <%= lancamento.status === 'inativo' ? 'selected' : '' %>>Inativo</option>
                         </select>
                     </div>
                 </div>
@@ -52,22 +52,22 @@
                     <div class="col-md-5">
                         <label class="mb-1 fw-bold fs-5" for="endereco">Endereço</label>
                         <input type="text" class="form-control mb-2" id="endereco" name="endereco" 
-                            value="<%= estabelecimento.endereco %>" required>
+                            value="<%= lancamento.endereco %>" required>
                     </div>
                     <div class="col-md-3">
                         <label class="mb-1 fw-bold fs-5" for="bairro">Bairro</label>
                         <input type="text" class="form-control mb-2" id="bairro" name="bairro" 
-                            value="<%= estabelecimento.bairro %>" required>
+                            value="<%= lancamento.bairro %>" required>
                     </div>
                     <div class="col-md-2">
                         <label class="mb-1 fw-bold fs-5" for="chave">Chave</label>
                         <input type="text" class="form-control mb-2" id="chave" name="chave" 
-                            value="<%= estabelecimento.chave %>">
+                            value="<%= lancamento.chave %>">
                     </div>
                     <div class="col-md-2">
                         <label class="mb-1 fw-bold fs-5" for="maquina">Máquina</label>
                         <input type="text" class="form-control mb-2" id="maquina" name="maquina" 
-                            value="<%= estabelecimento.maquina %>">
+                            value="<%= lancamento.maquina %>">
                     </div>
                 </div>
 
@@ -76,32 +76,32 @@
                         <label class="mb-1 ms-4 fw-bold fs-5">Produto</label>
                         <div class="form-check">
                             <input class="form-check-input ms-1" type="checkbox" id="produto1" name="produto" 
-                                value="BOL" <%= estabelecimento.produto.includes('BOL') ? 'checked' : '' %>>
+                                value="BOL" <%= lancamento.produto.includes('BOL') ? 'checked' : '' %>>
                             <label class="form-check-label ms-2" for="produto1">BOL</label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input ms-1" type="checkbox" id="produto2" name="produto" 
-                                value="FIG" <%= estabelecimento.produto.includes('FIG') ? 'checked' : '' %>>
+                                value="FIG" <%= lancamento.produto.includes('FIG') ? 'checked' : '' %>>
                             <label class="form-check-label ms-2" for="produto2">FIG</label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input ms-1" type="checkbox" id="produto3" name="produto" 
-                                value="PEL" <%= estabelecimento.produto.includes('PEL') ? 'checked' : '' %>>
+                                value="PEL" <%= lancamento.produto.includes('PEL') ? 'checked' : '' %>>
                             <label class="form-check-label ms-2" for="produto3">PEL</label>
                         </div>
                     </div>
                     <div class="col-md-10">
                         <label class="mb-1 fw-bold fs-5" for="observacoes">Comentários</label>
                         <textarea class="form-control mb-2" id="observacoes" name="observacoes" rows="3" 
-                            maxlength="255"><%= estabelecimento.observacoes %></textarea>
+                            maxlength="255"><%= lancamento.observacoes %></textarea>
                         <div class="form-text text-end" id="charCounter">
-                            <%= estabelecimento.observacoes ? estabelecimento.observacoes.length : 0 %>/255 caracteres
+                            <%= lancamento.observacoes ? lancamento.observacoes.length : 0 %>/255 caracteres
                         </div>
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-center my-3">
-                    <a href="/estabelecimentos/table">
+                    <a href="/lancamentos/table">
                         <button type="button" class="btn btn-warning px-5 me-3 fs-5">Cancelar</button>
                     </a>
                     <button type="submit" class="btn btn-secondary px-5 fs-5">Atualizar</button>
@@ -124,7 +124,7 @@
                             <%= success %>
                         </div>
                         <div class="modal-footer justify-content-center">
-                            <a href="/estabelecimentos/table" class="btn btn-success btn-lg">OK</a>
+                            <a href="/lancamentos/table" class="btn btn-success btn-lg">OK</a>
                         </div>
                     </div>
                 </div>
@@ -252,7 +252,7 @@
                 successModal.show();
                 setTimeout(() => {
                     successModal.hide();
-                    window.location.href = '/estabelecimentos/table';
+                    window.location.href = '/lancamentos/table';
                 }, 3000);
             }
 
