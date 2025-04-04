@@ -4,20 +4,13 @@
 
 <head>
     <style>
-        .w-95 {
-            width: 95%;
-            margin: auto;
-        }
-
         /* Espaçador para o header fixo com espaçamento adicional */
-        .header-spacer {
-            height: 110px !important;
-        }
-
+ 
         /* Barra de cabeçalho acima da tabela */
         .header-bar {
             padding: 0.5rem !important;
             border-radius: 5px !important;
+            margin: 0 auto;
             margin-bottom: 0.5rem !important;
             position: relative !important;
             z-index: 5 !important;
@@ -25,7 +18,7 @@
 
         /* Contêiner da tabela com scroll */
         .table-container {
-            max-height: calc(80vh - 40px) !important;
+            max-height: calc(83vh - 40px) !important;
             overflow-y: auto !important;
             overflow-x: hidden !important;
             position: relative !important;
@@ -171,7 +164,7 @@
     </style>
 </head>
 
-<body class="bg-light w-95">
+<body class="bg-light">
 <%- include('../partials/header') %>
 
     <!-- Espaçador para compensar o header com espaçamento adicional -->
@@ -182,10 +175,10 @@
 
     <main class="main-lancamentos">
         <div class="row header-bar mb-0">
-            <div class="col-6">
+            <div class="col-6 p-0">
                 <h1 class="text-dark mb-0 fw-bold">Lançamentos Cadastrados</h1>
             </div>
-            <div class="col-6 d-flex justify-content-end align-items-center">
+            <div class="col-6 d-flex justify-content-end align-items-center p-0">
                 <a type="button" class="btn btn-secondary mb-0" href="/lancamentos/add">
                     Novo Lançamento
                 </a>

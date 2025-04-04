@@ -3,14 +3,14 @@
 :root {
 	--primary-color-1: #0000ff;
 	--primary-color-2: #ffae00;
-	--secondary-light-1: #f8f9fa;
-	--secondary-light-2: #e6e6e6;
-	--secondary-light-3: #d3d3d3;
+	--secondary-light-1: #eeeded;
+	--secondary-light-2: #d3d2d2;
+	--secondary-light-3: #b6b6b6;
 	--dark-color: #212529;
 	--dark-color-1: #3a3a3a;
-	--dark-color-2: #afafaf;
-	--dark-color-3: #dad9d9;
-	--light-blue-color: #cfcfff;
+	/* --dark-color-2: #afafaf; */
+	/* --dark-color-3: #dad9d9; */
+	/* --light-blue-color: #cfcfff; */
 }
 
 * {
@@ -22,24 +22,19 @@
 }
 
 main {
-	background-color: #d3eaff;
 	padding: 1em;
 	border-radius: 10px;
 }
 
 .main-estabelecimentos,
 .main-lancamentos{
-	background-color: var(--dark-color-3) !important;
+	background-color: var(--secondary-light-1) !important;
+	width: 95%;
+	margin: 0 auto;
 }
 
 .header-spacer {
-	height: 100px;
-}
-
-/* Ajuste adicional para o container */
-.container {
-	margin-top: 20px;
-	padding-top: 20px; /* Espaçamento adicional */
+	height: 20px !important;
 }
 
 h1 {
@@ -238,14 +233,17 @@ figure {
 .cabecalho {
 	display: flex;
 	justify-content: space-between;
-	padding: 0.5em 1.5em;
+	padding: .5em;
 	background-color: var(--dark-color);
 	color: #ffffff;
 	align-items: center;
-	margin-bottom: 1em;
 	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 	padding: 1em;
 	border-radius: 10px;
+	width: 95%;
+	margin: 0 auto;
+	margin-bottom: 1em;
+
 }
 
 .col-entrada-saida {
